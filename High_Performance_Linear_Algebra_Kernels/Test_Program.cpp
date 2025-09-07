@@ -6,80 +6,112 @@
 // Size: small: 64x64, medium: 256x256, large: 1024x1024
 enum class MatrixSize {
     TINY = 2,
+    TINT2 = 4,
     SMALL = 64, 
     MEDIUM = 256, 
     LARGE = 1024
 };
 
 // Change these constants to test different sizes
-const int MATRIXSIZE = static_cast<int>(MatrixSize::TINY);
-const int VECTORSIZE = static_cast<int>(MatrixSize::TINY);
-const int MATRIXSIZEA = static_cast<int>(MatrixSize::TINY);
-const int MATRIXSIZEB = static_cast<int>(MatrixSize::TINY);
+const int MATRIXSIZEROW = static_cast<int>(MatrixSize::TINY);
+const int MATRIXSIZECOL = static_cast<int>(MatrixSize::TINT2);
+const int VECTORSIZE = static_cast<int>(MatrixSize::TINT2);
 
- std::random_device rd;
- std::mt19937 gen(rd());
- std::uniform_int_distribution<> distrib(-100, 100);
+const int ROWSIZEA = static_cast<int>(MatrixSize::TINY);
+const int COLSIZEA = static_cast<int>(MatrixSize::TINY);
+const int ROWSIZEB = static_cast<int>(MatrixSize::TINY);
+const int COLSIZEB = static_cast<int>(MatrixSize::TINY);
+
+// Random number generation
+const int SEED = 42;
+const int MIN = -100;
+const int MAX = 100;
+
 
 void CreateRandomMatrix_RowMajor(double* matrix, int rows, int cols) {
+    std::random_device rd;
+    std::mt19937 gen(SEED);
+    std::uniform_int_distribution<> distrib(MIN, MAX);
     for (int i = 0; i < rows * cols; ++i) {
         matrix[i] = static_cast<double>(distrib(gen));
-        //matrix[i] = i + 1;
     }
 }
 void CreateRandomMatrix_ColMajor(double* matrix, int rows, int cols) {
-    for (int j = 0; j < cols; ++j) {
-        for (int i = 0; i < rows; ++i) {
-            matrix[i * cols + j] = static_cast<double>(distrib(gen));
+    std::random_device rd;
+    std::mt19937 gen(SEED);
+    std::uniform_int_distribution<> distrib(MIN, MAX);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            matrix[j * rows + i] = static_cast<double>(distrib(gen));
         }
     }
 }
 void CreateRandomVector(double* vector, int size) {
+    std::random_device rd;
+    std::mt19937 gen(SEED);
+    std::uniform_int_distribution<> distrib(MIN, MAX);
     for (int i = 0; i < size; ++i) {
         vector[i] = static_cast<double>(distrib(gen));
-        //vector[i] = i + 1;
     }
 }
 
 int main() {
     OriginalLinearOperation originalOp;
     // Initialize matrices and vectors
-    double* matrix_row = new double[MATRIXSIZE * MATRIXSIZE];
-    double* matrix_col = new double[MATRIXSIZE * MATRIXSIZE];
+    double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
+    double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
     double* vector = new double[VECTORSIZE];
-    double* result_row_major = new double[MATRIXSIZE];
-    double* result_col_major = new double[MATRIXSIZE];
+    double* result_row_major = new double[VECTORSIZE];
+    double* result_col_major = new double[VECTORSIZE];
 
     // Create random Matrix and Vector
-    CreateRandomMatrix_RowMajor(matrix_row, MATRIXSIZE, MATRIXSIZE);
-    CreateRandomMatrix_ColMajor(matrix_col, MATRIXSIZE, MATRIXSIZE);
+    CreateRandomMatrix_RowMajor(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL);
+    CreateRandomMatrix_ColMajor(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL);
     CreateRandomVector(vector, VECTORSIZE);
 
     // Verify dimensions for MV multiplication
-    originalOp.Verify(MATRIXSIZE,MATRIXSIZE);
+    originalOp.Verify(MATRIXSIZECOL,VECTORSIZE);
 
+    // Calculate the result and measure time for Row-Major MV multiplication
     auto start = std::chrono::high_resolution_clock::now();
-    originalOp.multiply_mv_row_major(matrix_row, MATRIXSIZE, MATRIXSIZE, vector, result_row_major);
+    originalOp.multiply_mv_row_major(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_row_major);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration_row_major = end - start;
     std::cout << "Result (Row-Major MV): " << std::endl;
-    for (int i = 0; i < VECTORSIZE; ++i) {
+    for (int i = 0; i < MATRIXSIZEROW; ++i) {
         std::cout << result_row_major[i] << " " << std::endl;
     }
     std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
 
+    // Calculate the result and measure time for Col-Major MV multiplication
+    start = std::chrono::high_resolution_clock::now();
+    originalOp.multiply_mv_col_major(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_col_major);
+    end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duration_col_major = end - start;
+    std::cout << "Result (Col-Major MV): " << std::endl;
+    for (int i = 0; i < MATRIXSIZEROW; ++i) {
+        std::cout << result_col_major[i] << " " << std::endl;
+    }
+    std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
+
     // Instance for Matrix-Matrix operations
-    const int rowsA = 1000;
-    const int colsA = 1000;
-    const int rowsB = colsA; 
-    const int colsB = 1000;
-    double* matrixA = new double[rowsA * colsA];
-    double* matrixB = new double[rowsB * colsB];
-    double* result_matrix = new double[rowsA * colsB];
+
+    double* matrixA = new double[ROWSIZEA * COLSIZEA];
+    double* matrixB = new double[ROWSIZEB * COLSIZEB];
+    double* result_matrix = new double[ROWSIZEA * COLSIZEB];
+
+    // Create random matrices
+    CreateRandomMatrix_RowMajor(matrixA, ROWSIZEA, COLSIZEA);
+    CreateRandomMatrix_RowMajor(matrixB, ROWSIZEB, COLSIZEB);
+
+    // Verify dimensions for MM multiplication
+    originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
+
+    // Calculate the result and measure time for native MM multiplication
 
 
+    // Calculate the result and measure time for Transposed MM multiplication
 
-    
 
     // Release resources
     delete[] matrix_row;
