@@ -23,14 +23,17 @@ const int ROWSIZEB = static_cast<int>(MatrixSize::TINY);
 const int COLSIZEB = static_cast<int>(MatrixSize::TINY);
 
 // Random number generation
-const int SEED = 42;
+const int SEED_MV_M = 42;
+const int SEED_MV_V = 42;
+const int SEED_MM_A = 42;
+const int SEED_MM_B = 42;
 const int MIN = -100;
 const int MAX = 100;
 
 
 void CreateRandomMatrix_RowMajor(double* matrix, int rows, int cols) {
     std::random_device rd;
-    std::mt19937 gen(SEED);
+    std::mt19937 gen(SEED_MV_M);
     std::uniform_int_distribution<> distrib(MIN, MAX);
     for (int i = 0; i < rows * cols; ++i) {
         matrix[i] = static_cast<double>(distrib(gen));
@@ -38,7 +41,7 @@ void CreateRandomMatrix_RowMajor(double* matrix, int rows, int cols) {
 }
 void CreateRandomMatrix_ColMajor(double* matrix, int rows, int cols) {
     std::random_device rd;
-    std::mt19937 gen(SEED);
+    std::mt19937 gen(SEED_MV_M);
     std::uniform_int_distribution<> distrib(MIN, MAX);
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
@@ -48,10 +51,19 @@ void CreateRandomMatrix_ColMajor(double* matrix, int rows, int cols) {
 }
 void CreateRandomVector(double* vector, int size) {
     std::random_device rd;
-    std::mt19937 gen(SEED);
+    std::mt19937 gen(SEED_MV_M);
     std::uniform_int_distribution<> distrib(MIN, MAX);
     for (int i = 0; i < size; ++i) {
         vector[i] = static_cast<double>(distrib(gen));
+    }
+}
+
+void CreateRandomMatrix_RowMajor_Seed(double* matrix, int rows, int cols, int seed) {
+    std::random_device rd;
+    std::mt19937 gen(seed);
+    std::uniform_int_distribution<> distrib(MIN, MAX);
+    for (int i = 0; i < rows * cols; ++i) {
+        matrix[i] = static_cast<double>(distrib(gen));
     }
 }
 
@@ -101,8 +113,8 @@ int main() {
     double* result_matrix = new double[ROWSIZEA * COLSIZEB];
 
     // Create random matrices
-    CreateRandomMatrix_RowMajor(matrixA, ROWSIZEA, COLSIZEA);
-    CreateRandomMatrix_RowMajor(matrixB, ROWSIZEB, COLSIZEB);
+    CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
+    CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
 
     // Verify dimensions for MM multiplication
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
