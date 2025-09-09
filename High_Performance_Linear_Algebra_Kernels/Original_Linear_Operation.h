@@ -14,7 +14,7 @@ public:
                          const double* matrixB, int rowsB, int colsB,
                          double* result);
     // Matrix-Matrix multiplication (Transposed B)
-    void multiply_mm_transposed(const double* matrixA, int rowsA, int colsA,
+    void multiply_mm_transposed_b(const double* matrixA, int rowsA, int colsA,
                                const double* matrixB_transposed, int rowsB, int colsB,
                                double* result);
 };
