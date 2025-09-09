@@ -123,6 +123,18 @@ int main() {
 
 
     // Calculate the result and measure time for Transposed MM multiplication
+    start = std::chrono::high_resolution_clock::now();
+    originalOp.multiply_mm_transposed_b(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+    end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duration_mm_transposed_b = end - start;
+    std::cout << "Result (MM Transposed B): " << std::endl;
+    for (int i = 0; i < MATRIXSIZEROW; ++i) {
+        for (int j = 0; j < MATRIXSIZECOL; ++j) {
+            std::cout << result_matrix[i * MATRIXSIZECOL + j] << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
 
 
     // Release resources
