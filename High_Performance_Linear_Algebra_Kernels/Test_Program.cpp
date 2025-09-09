@@ -69,6 +69,7 @@ void CreateRandomMatrix_RowMajor_Seed(double* matrix, int rows, int cols, int se
 
 int main() {
     OriginalLinearOperation originalOp;
+
     // Initialize matrices and vectors
     double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
     double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
@@ -91,9 +92,11 @@ int main() {
     std::chrono::duration<double, std::milli> duration_row_major = end - start;
     std::cout << "Result (Row-Major MV): " << std::endl;
     for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        std::cout << result_row_major[i] << " " << std::endl;
+        //std::cout << result_row_major[i] << " " << std::endl;
     }
     std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
+
+
 
     // Calculate the result and measure time for Col-Major MV multiplication
     start = std::chrono::high_resolution_clock::now();
@@ -102,7 +105,7 @@ int main() {
     std::chrono::duration<double, std::milli> duration_col_major = end - start;
     std::cout << "Result (Col-Major MV): " << std::endl;
     for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        std::cout << result_col_major[i] << " " << std::endl;
+        //std::cout << result_col_major[i] << " " << std::endl;
     }
     std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
 
@@ -123,18 +126,6 @@ int main() {
 
 
     // Calculate the result and measure time for Transposed MM multiplication
-    start = std::chrono::high_resolution_clock::now();
-    originalOp.multiply_mm_transposed_b(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
-    end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration_mm_transposed_b = end - start;
-    std::cout << "Result (MM Transposed B): " << std::endl;
-    for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        for (int j = 0; j < MATRIXSIZECOL; ++j) {
-            std::cout << result_matrix[i * MATRIXSIZECOL + j] << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
 
 
     // Release resources
