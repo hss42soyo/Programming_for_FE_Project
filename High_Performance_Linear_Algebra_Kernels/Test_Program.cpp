@@ -13,14 +13,26 @@ enum class MatrixSize {
 };
 
 // Change these constants to test different sizes
-const int MATRIXSIZEROW = static_cast<int>(MatrixSize::LARGE);
-const int MATRIXSIZECOL = static_cast<int>(MatrixSize::LARGE);
-const int VECTORSIZE = static_cast<int>(MatrixSize::LARGE);
+// const int MATRIXSIZEROW = static_cast<int>(MatrixSize::TINY);
+// const int MATRIXSIZECOL = static_cast<int>(MatrixSize::TINT2);
+// const int VECTORSIZE = static_cast<int>(MatrixSize::TINT2);
 
-const int ROWSIZEA = static_cast<int>(MatrixSize::LARGE);
-const int COLSIZEA = static_cast<int>(MatrixSize::LARGE);
-const int ROWSIZEB = static_cast<int>(MatrixSize::LARGE);
-const int COLSIZEB = static_cast<int>(MatrixSize::LARGE);
+// const int ROWSIZEA = static_cast<int>(MatrixSize::TINY);
+// const int COLSIZEA = static_cast<int>(MatrixSize::TINY);
+// const int ROWSIZEB = static_cast<int>(MatrixSize::TINY);
+// const int COLSIZEB = static_cast<int>(MatrixSize::TINY);
+
+// function to toggle sizes
+void set_sizes(MatrixSize size, int &matrix_rows, int &matrix_cols, int &vector_size,
+               int &rowsA, int &colsA, int &rowsB, int &colsB) {
+    matrix_rows = static_cast<int>(size);
+    matrix_cols = static_cast<int>(size);
+    vector_size = static_cast<int>(size);
+    rowsA = static_cast<int>(size);
+    colsA = static_cast<int>(size);
+    rowsB = static_cast<int>(size);
+    colsB = static_cast<int>(size);
+}
 
 // Random number generation
 const int SEED_MV_M = 42;
@@ -80,7 +92,9 @@ void CreateRandomMatrix_ColMajor_Seed(double* matrix, int rows, int cols, int se
 
 int main() {
     OriginalLinearOperation originalOp;
-
+    // Set sizes
+    int MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB;
+    set_sizes(MatrixSize::LARGE, MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
     // Initialize matrices and vectors
     double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
     double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
@@ -138,7 +152,6 @@ int main() {
     // Verify dimensions for MM multiplication
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
 
-    // Calculate the result and measure time for native MM multiplication
     // Calculate the result and measure time for native MM multiplication
     start = std::chrono::high_resolution_clock::now();
     originalOp.multiply_mm_naive(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);

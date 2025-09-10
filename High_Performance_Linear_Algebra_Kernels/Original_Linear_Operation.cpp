@@ -36,12 +36,13 @@ void OriginalLinearOperation::multiply_mv_col_major(const double* matrix, int ro
 }
 
 void OriginalLinearOperation::multiply_mm_naive(const double* matrixA, int rowsA, int colsA,
-                                                const double* matrixB, int rowsB, int colsB,double* result) {
-            for (int i = 0; i < rowsA; ++i) {
-                for (int j = 0; j < colsB; ++j) {
-                    result[i * colsB + j] = 0.0;
-                        for (int k = 0; k < colsA; ++k) {
-                            result[i * colsB + j] += matrixA[i * colsA + k] * matrixB[k * colsB + j];
+                                               const double* matrixB, int rowsB, int colsB,
+                                               double* result) {
+    for (int i = 0; i < rowsA; ++i) {
+        for (int j = 0; j < colsB; ++j) {
+            result[i * colsB + j] = 0.0;
+            for (int k = 0; k < colsA; ++k) {
+                result[i * colsB + j] += matrixA[i * colsA + k] * matrixB[k * colsB + j];
             }
         }
     }
