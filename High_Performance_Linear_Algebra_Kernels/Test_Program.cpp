@@ -79,6 +79,17 @@ void CreateRandomMatrix_RowMajor_Seed(double* matrix, int rows, int cols, int se
     }
 }
 
+void CreateRandomMatrix_ColMajor_Seed(double* matrix, int rows, int cols, int seed) {
+    std::random_device rd;
+    std::mt19937 gen(seed);
+    std::uniform_int_distribution<> distrib(MIN, MAX);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            matrix[j * rows + i] = static_cast<double>(distrib(gen));
+        }
+    }
+}
+
 int main() {
     OriginalLinearOperation originalOp;
     // Set sizes
@@ -104,10 +115,11 @@ int main() {
     originalOp.multiply_mv_row_major(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_row_major);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration_row_major = end - start;
-    std::cout << "Result (Row-Major MV): " << std::endl;
-    for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        //std::cout << result_row_major[i] << " " << std::endl;
-    }
+
+    // std::cout << "Result (Row-Major MV): " << std::endl;
+    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+    //     std::cout << result_row_major[i] << " " << std::endl;
+    // }
     std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
 
 
@@ -117,21 +129,25 @@ int main() {
     originalOp.multiply_mv_col_major(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_col_major);
     end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration_col_major = end - start;
-    std::cout << "Result (Col-Major MV): " << std::endl;
-    for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        //std::cout << result_col_major[i] << " " << std::endl;
-    }
+
+    // std::cout << "Result (Col-Major MV): " << std::endl;
+    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+    //     std::cout << result_col_major[i] << " " << std::endl;
+    // }
+
     std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
 
     // Instance for Matrix-Matrix operations
 
     double* matrixA = new double[ROWSIZEA * COLSIZEA];
     double* matrixB = new double[ROWSIZEB * COLSIZEB];
+    double* transposed_matrixB = new double[ROWSIZEB * COLSIZEB];
     double* result_matrix = new double[ROWSIZEA * COLSIZEB];
 
     // Create random matrices
     CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
     CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
+    CreateRandomMatrix_ColMajor_Seed(transposed_matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B); // For transposed multiplication
 
     // Verify dimensions for MM multiplication
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
@@ -144,6 +160,20 @@ int main() {
     std::cout << "Naive MM Multiplication Time: " << duration_mm_naive.count() << " ms" << std::endl;
 
     // Calculate the result and measure time for Transposed MM multiplication
+
+    start = std::chrono::high_resolution_clock::now();
+    originalOp.multiply_mm_transposed_b(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+    end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duration_mm_transposed_b = end - start;
+    // std::cout << "Result (MM Transposed B): " << std::endl;
+    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+    //     for (int j = 0; j < MATRIXSIZECOL; ++j) {
+    //         std::cout << result_matrix[i * MATRIXSIZECOL + j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
+
 
 
     // Release resources
