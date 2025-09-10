@@ -2,6 +2,7 @@
 #include <chrono>
 #include <random>
 #include "Original_Linear_Operation.h"
+#include <cstdlib>
 
 // Size: small: 64x64, medium: 256x256, large: 1024x1024
 enum class MatrixSize {
@@ -12,15 +13,6 @@ enum class MatrixSize {
     LARGE = 1024
 };
 
-// Change these constants to test different sizes
-// const int MATRIXSIZEROW = static_cast<int>(MatrixSize::TINY);
-// const int MATRIXSIZECOL = static_cast<int>(MatrixSize::TINT2);
-// const int VECTORSIZE = static_cast<int>(MatrixSize::TINT2);
-
-// const int ROWSIZEA = static_cast<int>(MatrixSize::TINY);
-// const int COLSIZEA = static_cast<int>(MatrixSize::TINY);
-// const int ROWSIZEB = static_cast<int>(MatrixSize::TINY);
-// const int COLSIZEB = static_cast<int>(MatrixSize::TINY);
 
 // function to toggle sizes
 void set_sizes(MatrixSize size, int &matrix_rows, int &matrix_cols, int &vector_size,
@@ -84,17 +76,52 @@ int main() {
     // Set sizes
     int MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB;
     set_sizes(MatrixSize::LARGE, MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
-    // Initialize matrices and vectors
-    double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
-    double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
-    double* vector = new double[VECTORSIZE];
-    double* result_row_major = new double[VECTORSIZE];
-    double* result_col_major = new double[VECTORSIZE];
+    
+    // Aligned matrices and vectors
+    double* matrix_row;
+    posix_memalign((void**)&matrix_row, 64, MATRIXSIZEROW * MATRIXSIZECOL * sizeof(double));
+
+    double* matrix_col;
+    posix_memalign((void**)&matrix_col, 64, MATRIXSIZECOL * MATRIXSIZEROW * sizeof(double));
+
+    double* vector;
+    posix_memalign((void**)&vector, 64, VECTORSIZE * sizeof(double));
+
+    double* result_row_major;
+    posix_memalign((void**)&result_row_major, 64, VECTORSIZE * sizeof(double));
+
+    double* result_col_major;
+    posix_memalign((void**)&result_col_major, 64, VECTORSIZE * sizeof(double));
+
+
+    double* matrixA;
+    posix_memalign((void**)&matrixA, 64, ROWSIZEA * COLSIZEA * sizeof(double));
+
+    double* matrixB;
+    posix_memalign((void**)&matrixB, 64, ROWSIZEB * COLSIZEB * sizeof(double));
+
+    double* result_matrix;
+    posix_memalign((void**)&result_matrix, 64, ROWSIZEA * COLSIZEB * sizeof(double));
+
+    double* matrixA_trans;
+    posix_memalign((void**)&matrixA_trans, 64, ROWSIZEA * COLSIZEA * sizeof(double));
+
+    double* matrixB_trans;
+    posix_memalign((void**)&matrixB_trans, 64, ROWSIZEB * COLSIZEB * sizeof(double));
+
+    double* result_matrix_trans;
+    posix_memalign((void**)&result_matrix_trans, 64, ROWSIZEA * COLSIZEB * sizeof(double));
 
     // Create random Matrix and Vector
     CreateRandomMatrix_RowMajor(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL);
     CreateRandomMatrix_ColMajor(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL);
     CreateRandomVector(vector, VECTORSIZE);
+    // Create random matrices
+    CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
+    CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
+    // Create random matrices
+    CreateRandomMatrix_RowMajor_Seed(matrixA_trans, ROWSIZEA, COLSIZEA, SEED_MM_A);
+    CreateRandomMatrix_RowMajor_Seed(matrixB_trans, ROWSIZEB, COLSIZEB, SEED_MM_B);
 
     // Verify dimensions for MV multiplication
     originalOp.Verify(MATRIXSIZECOL,VECTORSIZE);
@@ -123,16 +150,8 @@ int main() {
     }
     std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
 
+
     // Instance for Matrix-Matrix operations
-
-    double* matrixA = new double[ROWSIZEA * COLSIZEA];
-    double* matrixB = new double[ROWSIZEB * COLSIZEB];
-    double* result_matrix = new double[ROWSIZEA * COLSIZEB];
-
-    // Create random matrices
-    CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
-    CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
-
     // Verify dimensions for MM multiplication
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
 
@@ -144,16 +163,6 @@ int main() {
     std::cout << "Naive MM Multiplication Time: " << duration_mm_naive.count() << " ms" << std::endl;
 
     // Calculate the result and measure time for Transposed MM multiplication
-    // First, create the transposed matrixB
-
-    double* matrixA_trans = new double[ROWSIZEA * COLSIZEA];
-    double* matrixB_trans = new double[ROWSIZEB * COLSIZEB];
-    double* result_matrix_trans = new double[ROWSIZEA * COLSIZEB];
-
-    // Create random matrices
-    CreateRandomMatrix_RowMajor_Seed(matrixA_trans, ROWSIZEA, COLSIZEA, SEED_MM_A);
-    CreateRandomMatrix_RowMajor_Seed(matrixB_trans, ROWSIZEB, COLSIZEB, SEED_MM_B);
-
     // Verify dimensions for MM multiplication
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
 
@@ -165,14 +174,17 @@ int main() {
     std::cout << "Transposed MM Multiplication Time: " << duration_mm_transposed.count() << " ms" << std::endl;
 
     // Release resources
-    delete[] matrix_row;
-    delete[] matrix_col;
-    delete[] vector;
-    delete[] result_row_major;
-    delete[] result_col_major;
-    delete[] matrixA;
-    delete[] matrixB;
-    delete[] result_matrix;
+    free(matrix_row);
+    free(matrix_col);
+    free(vector);
+    free(result_row_major);
+    free(result_col_major);
+    free(matrixA);
+    free(matrixB);
+    free(result_matrix);
+    free(matrixA_trans);
+    free(matrixB_trans);
+    free(result_matrix_trans);
 
     return 0;
 }
