@@ -67,6 +67,17 @@ void CreateRandomMatrix_RowMajor_Seed(double* matrix, int rows, int cols, int se
     }
 }
 
+void CreateRandomMatrix_ColMajor_Seed(double* matrix, int rows, int cols, int seed) {
+    std::random_device rd;
+    std::mt19937 gen(seed);
+    std::uniform_int_distribution<> distrib(MIN, MAX);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            matrix[j * rows + i] = static_cast<double>(distrib(gen));
+        }
+    }
+}
+
 int main() {
     OriginalLinearOperation originalOp;
 
@@ -113,11 +124,13 @@ int main() {
 
     double* matrixA = new double[ROWSIZEA * COLSIZEA];
     double* matrixB = new double[ROWSIZEB * COLSIZEB];
+    double* transposed_matrixB = new double[ROWSIZEB * COLSIZEB];
     double* result_matrix = new double[ROWSIZEA * COLSIZEB];
 
     // Create random matrices
     CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
     CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
+    CreateRandomMatrix_ColMajor_Seed(transposed_matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B); // For transposed multiplication
 
     // Verify dimensions for MM multiplication
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
