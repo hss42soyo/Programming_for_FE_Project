@@ -13,14 +13,14 @@ enum class MatrixSize {
 };
 
 // Change these constants to test different sizes
-const int MATRIXSIZEROW = static_cast<int>(MatrixSize::TINY);
-const int MATRIXSIZECOL = static_cast<int>(MatrixSize::TINT2);
-const int VECTORSIZE = static_cast<int>(MatrixSize::TINT2);
+const int MATRIXSIZEROW = static_cast<int>(MatrixSize::LARGE);
+const int MATRIXSIZECOL = static_cast<int>(MatrixSize::LARGE);
+const int VECTORSIZE = static_cast<int>(MatrixSize::LARGE);
 
-const int ROWSIZEA = static_cast<int>(MatrixSize::TINY);
-const int COLSIZEA = static_cast<int>(MatrixSize::TINY);
-const int ROWSIZEB = static_cast<int>(MatrixSize::TINY);
-const int COLSIZEB = static_cast<int>(MatrixSize::TINY);
+const int ROWSIZEA = static_cast<int>(MatrixSize::LARGE);
+const int COLSIZEA = static_cast<int>(MatrixSize::LARGE);
+const int ROWSIZEB = static_cast<int>(MatrixSize::LARGE);
+const int COLSIZEB = static_cast<int>(MatrixSize::LARGE);
 
 // Random number generation
 const int SEED_MV_M = 42;
@@ -101,10 +101,11 @@ int main() {
     originalOp.multiply_mv_row_major(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_row_major);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration_row_major = end - start;
-    std::cout << "Result (Row-Major MV): " << std::endl;
-    for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        //std::cout << result_row_major[i] << " " << std::endl;
-    }
+
+    // std::cout << "Result (Row-Major MV): " << std::endl;
+    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+    //     std::cout << result_row_major[i] << " " << std::endl;
+    // }
     std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
 
 
@@ -114,10 +115,12 @@ int main() {
     originalOp.multiply_mv_col_major(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_col_major);
     end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration_col_major = end - start;
-    std::cout << "Result (Col-Major MV): " << std::endl;
-    for (int i = 0; i < MATRIXSIZEROW; ++i) {
-        //std::cout << result_col_major[i] << " " << std::endl;
-    }
+
+    // std::cout << "Result (Col-Major MV): " << std::endl;
+    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+    //     std::cout << result_col_major[i] << " " << std::endl;
+    // }
+
     std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
 
     // Instance for Matrix-Matrix operations
@@ -136,9 +139,28 @@ int main() {
     originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
 
     // Calculate the result and measure time for native MM multiplication
-
+    // Calculate the result and measure time for native MM multiplication
+    start = std::chrono::high_resolution_clock::now();
+    originalOp.multiply_mm_naive(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+    end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duration_mm_naive = end - start;
+    std::cout << "Naive MM Multiplication Time: " << duration_mm_naive.count() << " ms" << std::endl;
 
     // Calculate the result and measure time for Transposed MM multiplication
+
+    start = std::chrono::high_resolution_clock::now();
+    originalOp.multiply_mm_transposed_b(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+    end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> duration_mm_transposed_b = end - start;
+    // std::cout << "Result (MM Transposed B): " << std::endl;
+    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+    //     for (int j = 0; j < MATRIXSIZECOL; ++j) {
+    //         std::cout << result_matrix[i * MATRIXSIZECOL + j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
+
 
 
     // Release resources
