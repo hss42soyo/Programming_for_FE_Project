@@ -92,9 +92,7 @@ void CreateRandomMatrix_ColMajor_Seed(double* matrix, int rows, int cols, int se
 
 int main() {
     OriginalLinearOperation originalOp;
-    // Set sizes
-    int MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB;
-    set_sizes(MatrixSize::LARGE, MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
+
     // Initialize matrices and vectors
     double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
     double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
