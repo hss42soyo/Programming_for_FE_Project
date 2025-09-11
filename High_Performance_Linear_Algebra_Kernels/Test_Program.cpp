@@ -7,9 +7,14 @@
 enum class MatrixSize {
     TINY = 2,
     TINT2 = 4,
-    SMALL = 64, 
+    SMALL1 = 64, 
+    SMALL2 = 128,
     MEDIUM = 256, 
-    LARGE = 1024
+    MEDIUM2 = 512,
+    LARGE = 1024,
+    LARGE2 = 2048,
+    ENORMOUS = 4096,
+    ENORMOUS2 = 8192
 };
 
 // Change these constants to test different sizes
@@ -92,99 +97,113 @@ void CreateRandomMatrix_ColMajor_Seed(double* matrix, int rows, int cols, int se
 
 int main() {
     OriginalLinearOperation originalOp;
-    // Set sizes
     int MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB;
-    set_sizes(MatrixSize::LARGE, MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
-    // Initialize matrices and vectors
-    double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
-    double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
-    double* vector = new double[VECTORSIZE];
-    double* result_row_major = new double[VECTORSIZE];
-    double* result_col_major = new double[VECTORSIZE];
 
-    // Create random Matrix and Vector
-    CreateRandomMatrix_RowMajor(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL);
-    CreateRandomMatrix_ColMajor(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL);
-    CreateRandomVector(vector, VECTORSIZE);
+    for(auto Size : {MatrixSize::TINY, MatrixSize::TINT2, 
+        MatrixSize::SMALL1, MatrixSize::SMALL2, MatrixSize::MEDIUM, 
+        MatrixSize::MEDIUM2, MatrixSize::LARGE, MatrixSize::LARGE2,
+        MatrixSize::ENORMOUS, MatrixSize::ENORMOUS2}) {
 
-    // Verify dimensions for MV multiplication
-    originalOp.Verify(MATRIXSIZECOL,VECTORSIZE);
+        std::cout << "Testing Size: " << static_cast<int>(Size) << "x" << static_cast<int>(Size) << std::endl;
+        // Set sizes
+        set_sizes(Size, MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
+        // Initialize matrices and vectors
+        double* matrix_row = new double[MATRIXSIZEROW * MATRIXSIZECOL];
+        double* matrix_col = new double[MATRIXSIZECOL * MATRIXSIZEROW];
+        double* vector = new double[VECTORSIZE];
+        double* result_row_major = new double[VECTORSIZE];
+        double* result_col_major = new double[VECTORSIZE];
 
-    // Calculate the result and measure time for Row-Major MV multiplication
-    auto start = std::chrono::high_resolution_clock::now();
-    originalOp.multiply_mv_row_major(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_row_major);
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration_row_major = end - start;
+        // Create random Matrix and Vector
+        CreateRandomMatrix_RowMajor(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL);
+        CreateRandomMatrix_ColMajor(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL);
+        CreateRandomVector(vector, VECTORSIZE);
 
-    // std::cout << "Result (Row-Major MV): " << std::endl;
-    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
-    //     std::cout << result_row_major[i] << " " << std::endl;
-    // }
-    std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
+        // Verify dimensions for MV multiplication
+        originalOp.Verify(MATRIXSIZECOL,VECTORSIZE);
 
+        // Calculate the result and measure time for Row-Major MV multiplication
+        auto start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mv_row_major(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_row_major);
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_row_major = end - start;
 
-
-    // Calculate the result and measure time for Col-Major MV multiplication
-    start = std::chrono::high_resolution_clock::now();
-    originalOp.multiply_mv_col_major(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_col_major);
-    end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration_col_major = end - start;
-
-    // std::cout << "Result (Col-Major MV): " << std::endl;
-    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
-    //     std::cout << result_col_major[i] << " " << std::endl;
-    // }
-
-    std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
-
-    // Instance for Matrix-Matrix operations
-
-    double* matrixA = new double[ROWSIZEA * COLSIZEA];
-    double* matrixB = new double[ROWSIZEB * COLSIZEB];
-    double* transposed_matrixB = new double[ROWSIZEB * COLSIZEB];
-    double* result_matrix = new double[ROWSIZEA * COLSIZEB];
-
-    // Create random matrices
-    CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
-    CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
-    CreateRandomMatrix_ColMajor_Seed(transposed_matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B); // For transposed multiplication
-
-    // Verify dimensions for MM multiplication
-    originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
-
-    // Calculate the result and measure time for native MM multiplication
-    start = std::chrono::high_resolution_clock::now();
-    originalOp.multiply_mm_naive(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
-    end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration_mm_naive = end - start;
-    std::cout << "Naive MM Multiplication Time: " << duration_mm_naive.count() << " ms" << std::endl;
-
-    // Calculate the result and measure time for Transposed MM multiplication
-
-    start = std::chrono::high_resolution_clock::now();
-    originalOp.multiply_mm_transposed_b(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
-    end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> duration_mm_transposed_b = end - start;
-    // std::cout << "Result (MM Transposed B): " << std::endl;
-    // for (int i = 0; i < MATRIXSIZEROW; ++i) {
-    //     for (int j = 0; j < MATRIXSIZECOL; ++j) {
-    //         std::cout << result_matrix[i * MATRIXSIZECOL + j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
+        // std::cout << "Result (Row-Major MV): " << std::endl;
+        // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+        //     std::cout << result_row_major[i] << " " << std::endl;
+        // }
+        std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
 
 
 
-    // Release resources
-    delete[] matrix_row;
-    delete[] matrix_col;
-    delete[] vector;
-    delete[] result_row_major;
-    delete[] result_col_major;
-    delete[] matrixA;
-    delete[] matrixB;
-    delete[] result_matrix;
+        // Calculate the result and measure time for Col-Major MV multiplication
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mv_col_major(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_col_major);
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_col_major = end - start;
+
+        // std::cout << "Result (Col-Major MV): " << std::endl;
+        // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+        //     std::cout << result_col_major[i] << " " << std::endl;
+        // }
+
+        std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
+
+        // Instance for Matrix-Matrix operations
+
+        double* matrixA = new double[ROWSIZEA * COLSIZEA];
+        double* matrixB = new double[ROWSIZEB * COLSIZEB];
+        double* transposed_matrixB = new double[ROWSIZEB * COLSIZEB];
+        double* result_matrix = new double[ROWSIZEA * COLSIZEB];
+
+        // Create random matrices
+        CreateRandomMatrix_RowMajor_Seed(matrixA, ROWSIZEA, COLSIZEA, SEED_MM_A);
+        CreateRandomMatrix_RowMajor_Seed(matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B);
+        CreateRandomMatrix_ColMajor_Seed(transposed_matrixB, ROWSIZEB, COLSIZEB, SEED_MM_B); // For transposed multiplication
+
+        // Verify dimensions for MM multiplication
+        originalOp.Verify(ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB);
+
+        // Calculate the result and measure time for native MM multiplication
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mm_naive(matrixA, ROWSIZEA, COLSIZEA, matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_mm_naive = end - start;
+        std::cout << "Naive MM Multiplication Time: " << duration_mm_naive.count() << " ms" << std::endl;
+
+        // Calculate the result and measure time for Transposed MM multiplication
+
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mm_transposed_b(matrixA, ROWSIZEA, COLSIZEA, transposed_matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_mm_transposed_b = end - start;
+        // std::cout << "Result (MM Transposed B): " << std::endl;
+        // for (int i = 0; i < MATRIXSIZEROW; ++i) {
+        //     for (int j = 0; j < MATRIXSIZECOL; ++j) {
+        //         std::cout << result_matrix[i * MATRIXSIZECOL + j] << " ";
+        //     }
+        //     std::cout << std::endl;
+        // }
+        std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
+
+
+
+        // Release resources
+        delete[] matrix_row;
+        delete[] matrix_col;
+        delete[] vector;
+        delete[] result_row_major;
+        delete[] result_col_major;
+        delete[] matrixA;
+        delete[] matrixB;
+        delete[] transposed_matrixB;
+        delete[] result_matrix;
+
+        std::cout << "----------------------------------------" << std::endl;
+
+    }
+    
+    
 
     return 0;
 }
