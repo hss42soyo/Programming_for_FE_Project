@@ -14,7 +14,6 @@ enum class MatrixSize {
     LARGE = 1024,
     LARGE2 = 2048,
     ENORMOUS = 4096,
-    ENORMOUS2 = 8192
 };
 
 // Change these constants to test different sizes
@@ -99,10 +98,6 @@ int main() {
     OriginalLinearOperation originalOp;
     int MATRIXSIZEROW, MATRIXSIZECOL, VECTORSIZE, ROWSIZEA, COLSIZEA, ROWSIZEB, COLSIZEB;
 
-    // for(auto Size : {MatrixSize::TINY, MatrixSize::TINT2, 
-    //     MatrixSize::SMALL1, MatrixSize::SMALL2, MatrixSize::MEDIUM, 
-    //     MatrixSize::MEDIUM2, MatrixSize::LARGE, MatrixSize::LARGE2,
-    //     MatrixSize::ENORMOUS, MatrixSize::ENORMOUS2}) {
     for(auto Size : {MatrixSize::TINY, MatrixSize::TINT2, 
         MatrixSize::SMALL1, MatrixSize::SMALL2, MatrixSize::MEDIUM, 
         MatrixSize::MEDIUM2, MatrixSize::LARGE, MatrixSize::LARGE2,
@@ -117,6 +112,8 @@ int main() {
         double* vector = new double[VECTORSIZE];
         double* result_row_major = new double[VECTORSIZE];
         double* result_col_major = new double[VECTORSIZE];
+        double* result_row_major_opt = new double[VECTORSIZE];
+        double* result_col_major_opt = new double[VECTORSIZE];
 
         // Create random Matrix and Vector
         CreateRandomMatrix_RowMajor(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL);
@@ -137,8 +134,13 @@ int main() {
         //     std::cout << result_row_major[i] << " " << std::endl;
         // }
         std::cout << "Row-Major MV Multiplication Time: " << duration_row_major.count() << " ms" << std::endl;
-
-
+        
+        // Optimized Row-Major MV multiplication
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mv_row_major_opt(matrix_row, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_row_major_opt);
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_row_major_opt = end - start;
+        std::cout << "Row-Major MV Multiplication (Optimized) Time: " << duration_row_major_opt.count() << " ms" << std::endl;
 
         // Calculate the result and measure time for Col-Major MV multiplication
         start = std::chrono::high_resolution_clock::now();
@@ -152,6 +154,13 @@ int main() {
         // }
 
         std::cout << "Col-Major MV Multiplication Time: " << duration_col_major.count() << " ms" << std::endl;
+        
+        // Optimized Col-Major MV multiplication
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mv_col_major_opt(matrix_col, MATRIXSIZEROW, MATRIXSIZECOL, vector, result_col_major_opt);
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_col_major_opt = end - start;
+        std::cout << "Col-Major MV Multiplication (Optimized) Time: " << duration_col_major_opt.count() << " ms" << std::endl;
 
         // Instance for Matrix-Matrix operations
 
@@ -175,6 +184,14 @@ int main() {
         std::chrono::duration<double, std::milli> duration_mm_naive = end - start;
         std::cout << "Naive MM Multiplication Time: " << duration_mm_naive.count() << " ms" << std::endl;
 
+        // Optimized Naive MM multiplication
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mm_naive_opt(matrixA, ROWSIZEA, COLSIZEA,
+                            matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+        end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_mm_naive_opt = end - start;
+        std::cout << "Optimized Naive MM Multiplication Time: " << duration_mm_naive_opt.count() << " ms" << std::endl;
+
         // Calculate the result and measure time for Transposed MM multiplication
 
         start = std::chrono::high_resolution_clock::now();
@@ -190,11 +207,20 @@ int main() {
         // }
         std::cout << "MM Transposed B Multiplication Time: " << duration_mm_transposed_b.count() << " ms" << std::endl;
 
+        // Optimized Transposed MM multiplication
+        start = std::chrono::high_resolution_clock::now();
+        originalOp.multiply_mm_transposed_b_opt(matrixA, ROWSIZEA, COLSIZEA,
+                               transposed_matrixB, ROWSIZEB, COLSIZEB, result_matrix);
+        end = std::chrono::high_resolution_clock::now();
 
+        std::chrono::duration<double, std::milli> duration_mm_transposed_b_opt = end - start;
+        std::cout << "Optimized MM Transposed B Multiplication Time: " << duration_mm_transposed_b_opt.count() << " ms" << std::endl;
 
         // Release resources
         delete[] matrix_row;
         delete[] matrix_col;
+        delete[] result_row_major_opt;
+        delete[] result_col_major_opt;
         delete[] vector;
         delete[] result_row_major;
         delete[] result_col_major;
@@ -206,8 +232,6 @@ int main() {
         std::cout << "----------------------------------------" << std::endl;
 
     }
-    
-    
 
     return 0;
 }
