@@ -66,8 +66,13 @@ Below are the table of our benchmarking results.
 
 
 $2.$ Cache Locality Analysis
+On common CPUs (64B cache lines), the Row-Major version is usually faster because it accesses the matrix in a sequential streaming manner (high hit rate and hardware prefetcher friendly); while the Column-Major version uses large strides in this loop order and has poor spatial locality, especially when the rows are large.
 
-TODO
+Naive (B is row-major, not transposed)
+When computing C[i][j] = Σ_k A[i][k] * B[k][j], the inner k increment will access B with a stride length = colsB, resulting in large strides across rows and poor spatial locality.
+
+Transposing B (using B^T row-major order)
+B[k][j] = (B^T)[j][k]. If we fetch a row using the row pointer b_row = &B^T[j][0], and then sequentially access b_row[k] using the inner k, we achieve a sequential streaming read of the entire row of B^T, significantly improving cache hit rate and forming a "double-stream" dot product with the sequential access of A[i][:].
 
 $3.$ Memory Alignment
 
