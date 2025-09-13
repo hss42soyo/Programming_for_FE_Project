@@ -50,7 +50,6 @@ void OriginalLinearOperation::multiply_mm_naive(const double* matrixA, int rowsA
 
 void OriginalLinearOperation::multiply_mm_transposed_b(const double* matrixA, int rowsA, int colsA,
                                                     const double* matrixB_transposed, int rowsB, int colsB, double* result) {
-    #pragma omp parallel for
     for (int i = 0; i < rowsA; ++i) {
         const double* arow = matrixA + i * colsA;  // i th row start pointer of A
         double* crow = result + i * colsB;         // i th row start pointer of result
