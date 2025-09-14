@@ -189,7 +189,7 @@ Both two methods can change compiler optimizations and below are our benchmarkin
 |    |           | O3                    | 3751.2500 ms                 |
 |    | 2048x2048 | O0                    | 36642.6000 ms                 |
 |    |           | O3                    | 40643.0000 ms                 |
-|    | 4096x4096 | O0                    | ms                 |
+|    | 4096x4096 | O0                    | 293795.0000 ms                 |
 |    |           | O3                    | 367138.0000 ms                 |
 | <b>multiply_mm_transposed_b</b>   | 2×2       | O0                    | 0.0002 ms                 |
 |    |           | O3                    | 0.0001 ms                 |
@@ -207,7 +207,7 @@ Both two methods can change compiler optimizations and below are our benchmarkin
 |    |           | O3                    | 3641.8400 ms                 |
 |    | 2048x2048 | O0                    | 34388.8000 ms                 |
 |    |           | O3                    | 39239.2000 ms                 |
-|    | 4096x4096 | O0                    | ms                 |
+|    | 4096x4096 | O0                    | 272516.0000 ms                 |
 |    |           | O3                    | 349148.0000 ms                 |
 
 It can be observed that for small and medium matrices, the effect of compiler optimization is significant. The execution of O3 is much lower than that of O0 for large sizes. However when the size grow large in matrices multiplication, compiler optimization O3 behave even worse than O0 in some cases.
@@ -216,7 +216,7 @@ When short and frequently called functions are inlined, execution efficiency can
 
 $5.$ Profiling
 
-TODO
+We've tried to profile it, yet the gprof went wrong and we have shown it to the professor.
 
 $6.$ Optimization Strategies
 
