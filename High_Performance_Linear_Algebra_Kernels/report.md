@@ -194,6 +194,7 @@ Or change the `args` in `tasks.json` in vscode.
 
 Both two methods can change compiler optimizations and below are our benchmarking results.
 
+
 |                 Function                 |   Size   | Compiler Optimization | Execution Time |
 | :--------------------------------------: | :-------: | :-------------------: | :------------: |
 |  `<b>`multiply_mv_row_major `</b>`  |   2×2   |          O0          |   0.0002 ms   |
@@ -268,6 +269,82 @@ Both two methods can change compiler optimizations and below are our benchmarkin
 |                                          |          |          O3          | 39239.2000 ms |
 |                                          | 4096x4096 |          O0          | 272516.0000ms |
 |                                          |          |          O3          | 349148.0000 ms |
+=======
+| Function                | Size      | Compiler Optimization |  Execution Time |
+|:-----------------------:|:---------:|:---------------------:|:------------------:|
+| <b>multiply_mv_row_major</b>   | 2×2       | O0                    | 0.0002 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 4×4       | O0                    | 0.0002 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 64x64     | O0                    | 0.0096 ms                 |
+|    |           | O3                    | 0.0016 ms                 |
+|    | 128x128   | O0                    | 0.0372 ms                 |
+|    |           | O3                    | 0.0075 ms                 |
+|    | 256x256   | O0                    | 0.1521 ms                 |
+|    |           | O3                    | 0.0339 ms                 |
+|    | 512x512   | O0                    | 0.6494 ms                 |
+|    |           | O3                    | 0.1537 ms                 |
+|    | 1024x1024 | O0                    | 2.5006 ms                 |
+|    |           | O3                    | 0.6135 ms                 |
+|    | 2048x2048 | O0                    | 10.6520 ms                 |
+|    |           | O3                    | 2.8979 ms                 |
+|    | 4096x4096 | O0                    | 39.3285 ms                 |
+|    |           | O3                    | 11.7290 ms                 |
+| <b>multiply_mv_col_major</b>   | 2×2       | O0                    | 0.0001 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 4×4       | O0                    | 0.0002 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 64x64     | O0                    | 0.0125 ms                 |
+|    |           | O3                    | 0.0043 ms                 |
+|    | 128x128   | O0                    | 0.0469 ms                 |
+|    |           | O3                    | 0.0167 ms                 |
+|    | 256x256   | O0                    | 0.1939 ms                 |
+|    |           | O3                    | 0.1029 ms                 |
+|    | 512x512   | O0                    | 0.7717 ms                 |
+|    |           | O3                    | 0.9228 ms                 |
+|    | 1024x1024 | O0                    | 2.914 ms                 |
+|    |           | O3                    | 3.6954 ms                 |
+|    | 2048x2048 | O0                    | 19.0277 ms                 |
+|    |           | O3                    | 20.5780 ms                 |
+|    | 4096x4096 | O0                    | 73.9502 ms                 |
+|    |           | O3                    | 85.1583 ms                 |
+| <b>multiply_mm_naive</b>   | 2×2       | O0                    | 0.0001 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 4×4       | O0                    | 0.0003 ms                 |
+|    |           | O3                    | 0.0002 ms                 |
+|    | 64x64     | O0                    | 0.6017 ms                 |
+|    |           | O3                    | 0.1014 ms                 |
+|    | 128x128   | O0                    | 5.0028 ms                 |
+|    |           | O3                    | 1.2346 ms                 |
+|    | 256x256   | O0                    | 42.0114 ms                 |
+|    |           | O3                    | 25.4073 ms                 |
+|    | 512x512   | O0                    | 401.1180 ms                 |
+|    |           | O3                    | 513.2000 ms                 |
+|    | 1024x1024 | O0                    | 3365.67 ms                 |
+|    |           | O3                    | 3751.2500 ms                 |
+|    | 2048x2048 | O0                    | 36642.6000 ms                 |
+|    |           | O3                    | 40643.0000 ms                 |
+|    | 4096x4096 | O0                    | 293795.0000 ms                 |
+|    |           | O3                    | 367138.0000 ms                 |
+| <b>multiply_mm_transposed_b</b>   | 2×2       | O0                    | 0.0002 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 4×4       | O0                    | 0.0004 ms                 |
+|    |           | O3                    | 0.0001 ms                 |
+|    | 64x64     | O0                    | 0.5924 ms                 |
+|    |           | O3                    | 0.0973 ms                 |
+|    | 128x128   | O0                    | 4.9857 ms                 |
+|    |           | O3                    | 1.2785 ms                 |
+|    | 256x256   | O0                    | 39.0641 ms                 |
+|    |           | O3                    | 25.9043 ms                 |
+|    | 512x512   | O0                    | 323.898 ms                 |
+|    |           | O3                    | 452.5820 ms                 |
+|    | 1024x1024 | O0                    | 2647.81 ms                 |
+|    |           | O3                    | 3641.8400 ms                 |
+|    | 2048x2048 | O0                    | 34388.8000 ms                 |
+|    |           | O3                    | 39239.2000 ms                 |
+|    | 4096x4096 | O0                    | 272516.0000 ms                 |
+|    |           | O3                    | 349148.0000 ms                 |
+
 
 It can be observed that for small and medium matrices, the effect of compiler optimization is significant. The execution of O3 is much lower than that of O0 for large sizes. However when the size grow large in matrices multiplication, compiler optimization O3 behave even worse than O0 in some cases.
 
@@ -275,7 +352,7 @@ When short and frequently called functions are inlined, execution efficiency can
 
 $5.$ Profiling
 
-TODO
+We've tried to profile it, yet the gprof went wrong and we have shown it to the professor.
 
 $6.$ Optimization Strategies
 
