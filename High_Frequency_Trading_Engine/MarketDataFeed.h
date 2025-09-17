@@ -15,5 +15,3 @@ public:
 private:
     std::vector<MarketData>& data;
 };
-
-#endif
