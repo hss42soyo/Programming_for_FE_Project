@@ -214,7 +214,7 @@ void TradeEngine::getOrdersToCsv()
     for (const auto &o : orders)
     {
         file << o.instrument_id << "," << o.price << "," << (o.is_buy ? "Buy" : "Sell") << ","
-             << std::chrono::duration_cast<std::chrono::milliseconds>(o.timestamp.time_since_epoch()).count() << "\n";
+             << std::chrono::duration_cast<std::chrono::nanoseconds>(o.timestamp.time_since_epoch()).count() << "\n";
     }
     file.close();
 }

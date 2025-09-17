@@ -5,7 +5,7 @@
 #include "TradeEngine.h"
 
 
-int main() {
+int main(){
     std::vector<MarketData> feed;
     MarketDataFeed generator(feed);
 
