@@ -21,6 +21,6 @@ int main() {
 
     engine.reportStats();
     std::cout << "Total Runtime (ms): " << runtime << std::endl;
-
+    engine.getOrdersToCsv();
     return 0;
 }
