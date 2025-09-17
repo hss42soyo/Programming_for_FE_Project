@@ -16,6 +16,7 @@ public:
     void process();
     void process_simultaneous(int num_ticks);
     void reportStats();
+    void getOrdersToCsv();
 
 private:
     std::vector<MarketData> &market_data;
@@ -26,8 +27,9 @@ private:
     // double signal1_count = 0, signal2_count = 0, signal3_count = 0;
     void updateHistory(const MarketData &tick);
     double getAvg(int id);
-
+    double getStd(int id);
     bool signal1(const MarketData &tick);
     bool signal2(const MarketData &tick);
     bool signal3(const MarketData &tick);
+    int signal4(const MarketData &tick);
 };

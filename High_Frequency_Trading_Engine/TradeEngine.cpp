@@ -3,6 +3,7 @@
 #include "MarketDataFeed.h"
 #include "TradeEngine.h"
 #include <random>
+#include <fstream>
 
 TradeEngine::TradeEngine(std::vector<MarketData> &feed)
     : market_data(feed) {}
@@ -47,6 +48,15 @@ void TradeEngine::process_simultaneous(int num_ticks)
             // signal3_count++;
         }
 
+        if (signal4(tick) == 1)
+        {
+            buy = true;
+        }
+        else if(signal4(tick) == -1)
+        {
+            sell = true;
+        }
+
         if (buy || sell)
         {
             auto now = std::chrono::high_resolution_clock::now();
@@ -87,6 +97,15 @@ void TradeEngine::process()
         {
             buy = true;
             // signal3_count++;
+        }
+
+        if (signal4(tick) == 1)
+        {
+            buy = true;
+        }
+        else if(signal4(tick) == -1)
+        {
+            sell = true;
         }
 
         if (buy || sell)
@@ -140,6 +159,15 @@ double TradeEngine::getAvg(int id)
     return hist.empty() ? 0 : sum / hist.size();
 }
 
+double TradeEngine::getStd(int id)
+{
+    auto &hist = price_history[id];
+    double sum = 0, avg = getAvg(id);
+    for (double p : hist)
+        sum += (p - avg) * (p - avg);
+    return hist.empty() ? 0 : std::sqrt(sum / hist.size());
+}
+
 bool TradeEngine::signal1(const MarketData &tick)
 {
     return tick.price < 105.0 || tick.price > 195.0;
@@ -161,4 +189,32 @@ bool TradeEngine::signal3(const MarketData &tick)
     double diff1 = hist[hist.size() - 2] - hist[hist.size() - 3];
     double diff2 = hist[hist.size() - 1] - hist[hist.size() - 2];
     return diff1 > 0 && diff2 > 0;
+}
+
+int TradeEngine::signal4(const MarketData &tick)
+{
+    double avg = getAvg(tick.instrument_id);
+    double std = getStd(tick.instrument_id);
+    double dir = (tick.price - avg)/std;
+    if (dir > 2){
+        return -1;
+    }
+    else if (dir < -2){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+void TradeEngine::getOrdersToCsv()
+{
+    std::ofstream file("orders.csv");
+    file << "InstrumentID,Price,IsBuy,Timestamp\n";
+    for (const auto &o : orders)
+    {
+        file << o.instrument_id << "," << o.price << "," << (o.is_buy ? "Buy" : "Sell") << ","
+             << std::chrono::duration_cast<std::chrono::milliseconds>(o.timestamp.time_since_epoch()).count() << "\n";
+    }
+    file.close();
 }
