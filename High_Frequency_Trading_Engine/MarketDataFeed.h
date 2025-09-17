@@ -1,4 +1,9 @@
-# include <vector>
+#ifndef MARKETDATAFEED_H
+#define MARKETDATAFEED_H
+
+#include <vector>
+#include <random>
+#include <chrono>
 // header file
 struct alignas(64) MarketData {
     int instrument_id;
@@ -13,3 +18,5 @@ public:
 private:
     std::vector<MarketData>& data;
 };
+
+#endif

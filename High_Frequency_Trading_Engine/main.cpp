@@ -5,7 +5,7 @@
 #include "TradeEngine.h"
 
 
-int main() {
+int main(){
     std::vector<MarketData> feed;
     MarketDataFeed generator(feed);
 
@@ -19,7 +19,7 @@ int main() {
     auto runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
     engine.reportStats();
-    std::cout << \"Total Runtime (ms): \" << runtime << std::endl;
+    std::cout << "\nTotal Runtime (ms): \n" << runtime << std::endl;
 
     return 0;
 }

@@ -3,6 +3,7 @@
 #include <chrono>
 #include "MarketDataFeed.h"
 
+MarketDataFeed::MarketDataFeed(std::vector<MarketData>& ref) : data(ref) {}
 
 void MarketDataFeed::generateData(int num_ticks) {
     std::random_device rd;

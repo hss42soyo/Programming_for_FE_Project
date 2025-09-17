@@ -24,8 +24,10 @@ private:
 
     void updateHistory(const MarketData &tick);
     double getAvg(int id);
+    double getStd(int id);
 
     bool signal1(const MarketData &tick);
     bool signal2(const MarketData &tick);
     bool signal3(const MarketData &tick);
+    bool signal4(const MarketData &tick);
 };
