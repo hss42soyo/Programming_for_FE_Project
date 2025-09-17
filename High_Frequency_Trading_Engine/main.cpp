@@ -10,16 +10,17 @@ int main() {
     MarketDataFeed generator(feed);
 
     auto start = std::chrono::high_resolution_clock::now();
-    generator.generateData(100000);
 
     TradeEngine engine(feed);
-    engine.process();
+//    generator.generateData(1000000);
+//    engine.process();
+    engine.process_simultaneous(100000);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
     engine.reportStats();
-    std::cout << \"Total Runtime (ms): \" << runtime << std::endl;
-
+    std::cout << "Total Runtime (ms): " << runtime << std::endl;
+    engine.getOrdersToCsv();
     return 0;
 }
