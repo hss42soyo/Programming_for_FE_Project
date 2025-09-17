@@ -1,5 +1,7 @@
-# include <vector>
-// header file
+#pragma once
+#include <vector>
+#include <chrono>
+
 struct alignas(64) MarketData {
     int instrument_id;
     double price;
@@ -8,7 +10,7 @@ struct alignas(64) MarketData {
 
 class MarketDataFeed {
 public:
-    MarketDataFeed(std::vector<MarketData>& ref);
+    explicit MarketDataFeed(std::vector<MarketData>& ref);
     void generateData(int num_ticks);
 private:
     std::vector<MarketData>& data;

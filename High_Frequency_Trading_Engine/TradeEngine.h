@@ -11,17 +11,19 @@ struct alignas(64) Order {
 class TradeEngine
 {
 public:
-    TradeEngine(const std::vector<MarketData> &feed);
+    TradeEngine(std::vector<MarketData> &feed);
 
     void process();
+    void process_simultaneous(int num_ticks);
     void reportStats();
 
 private:
-    const std::vector<MarketData> &market_data;
+    std::vector<MarketData> &market_data;
     std::vector<Order> orders;
     std::vector<long long> latencies;
     std::unordered_map<int, std::vector<double>> price_history;
-
+    
+    // double signal1_count = 0, signal2_count = 0, signal3_count = 0;
     void updateHistory(const MarketData &tick);
     double getAvg(int id);
 
