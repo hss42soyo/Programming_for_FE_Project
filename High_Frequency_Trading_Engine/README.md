@@ -57,6 +57,6 @@ Total Runtime (ms): 79
 The total runtime increases by roughly 10 times, but average and maximum latency also increases 10 times. It's because latency is calculated by order time minus the time data generated, but the **`process()` function was called after generating all of the data.
 
 
-Also, we discovered that funtion `erase()` will cost much time, so we use a ring buffer to store tick data to prevent using `erase()` and reduced the latency.
+<!-- Also, we discovered that funtion `erase()` will cost much time, so we use a ring buffer to store tick data to prevent using `erase()` and reduced the latency.
 
-Optimized:
+Optimized: -->

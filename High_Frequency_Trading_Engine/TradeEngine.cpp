@@ -32,7 +32,7 @@ void TradeEngine::process_simultaneous(int num_ticks)
         if (signal1(tick))
         {
             buy = true;
-            // signal1_count++;
+            signal1_count++;
         }
         if (signal2(tick))
         {
@@ -40,21 +40,23 @@ void TradeEngine::process_simultaneous(int num_ticks)
                 buy = true;
             else
                 sell = true;
-            // signal2_count++;
+            signal2_count++;
         }
         if (signal3(tick))
         {
             buy = true;
-            // signal3_count++;
+            signal3_count++;
         }
 
         if (signal4(tick) == 1)
         {
             buy = true;
+            signal4_count++;
         }
         else if(signal4(tick) == -1)
         {
             sell = true;
+            signal4_count++;
         }
 
         if (buy || sell)
@@ -83,7 +85,7 @@ void TradeEngine::process()
         if (signal1(tick))
         {
             buy = true;
-            // signal1_count++;
+            signal1_count++;
         }
         if (signal2(tick))
         {
@@ -91,21 +93,23 @@ void TradeEngine::process()
                 buy = true;
             else
                 sell = true;
-            // signal2_count++;
+            signal2_count++;
         }
         if (signal3(tick))
         {
             buy = true;
-            // signal3_count++;
+            signal3_count++;
         }
 
         if (signal4(tick) == 1)
         {
             buy = true;
+            signal4_count++;
         }
         else if(signal4(tick) == -1)
         {
             sell = true;
+            signal4_count++;
         }
 
         if (buy || sell)
@@ -136,10 +140,11 @@ void TradeEngine::reportStats()
     std::cout << "Average Tick-to-Trade Latency (ns): "
               << (latencies.empty() ? 0 : sum / latencies.size()) << "\n";
     std::cout << "Maximum Tick-to-Trade Latency (ns): " << max_latency << "\n";
-    // std::cout << "Signal 1 Triggers: " << signal1_count << "\n";
-    // std::cout << "Signal 2 Triggers: " << signal2_count << "\n";
-    // std::cout << "Signal 3 Triggers: " << signal3_count << "\n";
-    // std::cout << "--------------------------\n";
+    std::cout << "Signal 1 Triggers: " << signal1_count << "\n";
+    std::cout << "Signal 2 Triggers: " << signal2_count << "\n";
+    std::cout << "Signal 3 Triggers: " << signal3_count << "\n";
+    std::cout << "Signal 4 Triggers: " << signal4_count << "\n";
+    std::cout << "--------------------------\n";
 }
 
 void TradeEngine::updateHistory(const MarketData &tick)

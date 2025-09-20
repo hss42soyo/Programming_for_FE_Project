@@ -24,7 +24,7 @@ private:
     std::vector<long long> latencies;
     std::unordered_map<int, std::vector<double>> price_history;
     
-    // double signal1_count = 0, signal2_count = 0, signal3_count = 0;
+    int signal1_count = 0, signal2_count = 0, signal3_count = 0, signal4_count = 0;
     void updateHistory(const MarketData &tick);
     double getAvg(int id);
     double getStd(int id);
