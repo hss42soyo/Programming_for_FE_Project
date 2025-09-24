@@ -48,7 +48,7 @@ mutex priceMutex;
 
 atomic<int> priceId{0};
 
-// 每5秒广播一次价格
+// Send new price every 5 seconds
 void broadcastPrices() {
     while (true) {
         int id = priceId++;
@@ -68,11 +68,11 @@ void broadcastPrices() {
     }
 }
 
-// 处理客户端
+// Handle a client connection
 void handleClient(ClientInfo* client) {
     char buffer[BUFFER_SIZE];
 
-    // 收客户端名
+    // Receive client name
     memset(buffer, 0, BUFFER_SIZE);
     int bytesReceived = recv(client->socket, buffer, BUFFER_SIZE - 1, 0);
     if (bytesReceived <= 0) {
@@ -83,7 +83,7 @@ void handleClient(ClientInfo* client) {
     client->name = string(buffer);
     cout << "👤 Registered client: " << client->name << endl;
 
-    // 收订单
+    // Receive orders
     while (true) {
         memset(buffer, 0, BUFFER_SIZE);
         bytesReceived = recv(client->socket, buffer, BUFFER_SIZE - 1, 0);
@@ -96,7 +96,10 @@ void handleClient(ClientInfo* client) {
         auto now = steady_clock::now();
 
         lock_guard<mutex> lock(priceMutex);
-        if (priceAlreadyHit.count(receivedPriceId)) continue;
+        if (priceAlreadyHit.count(receivedPriceId)) {
+            // Already hit by another client
+            continue;
+        }
         auto it = priceTimestamps.find(receivedPriceId);
         if (it == priceTimestamps.end()) {
             cerr << "⚠️ Unknown price ID: " << receivedPriceId << endl;
@@ -111,10 +114,10 @@ void handleClient(ClientInfo* client) {
     CLOSESOCKET(client->socket);
 }
 
-// 启动服务器
+// Start the server
 void startServer() {
 #ifdef _WIN32
-    // Windows 初始化Winsock
+    // Windows initialize Winsock
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
         cerr << "WSAStartup failed: " << GET_LAST_ERR() << endl;
@@ -140,7 +143,7 @@ void startServer() {
     sockaddr_in serverAddr{};
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORT);
-    // 绑定到127.0.0.1
+    // 127.0.0.1
     inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
 
     if (::bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -188,7 +191,6 @@ void startServer() {
         thread(handleClient, ptr).detach();
     }
 
-    // 不会到达：示意清理
     CLOSESOCKET(serverSocket);
 #ifdef _WIN32
     WSACleanup();
