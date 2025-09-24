@@ -72,26 +72,30 @@ void receiveAndRespond(SOCKET socketFd, const string& name) {
             if (up) {
                 // HIT!
                 this_thread::sleep_for(chrono::milliseconds(10 + rand() % 50));
-                cout << "Momentum up! Sending order for price ID " << priceId << endl;
-                
+                cout << "Momentum up! Sending order for price ID " << priceId << " Direction: Buy" << endl;
+                // Send order (price ID)
+                string order = to_string(priceId);
+                send(socketFd, order.c_str(), (int)order.size(), 0);
+                cout << "📤 Sent order for price ID: " << priceId << endl;
             }
             else if(down){
                 this_thread::sleep_for(chrono::milliseconds(10 + rand() % 50));
-                cout << "Momentum down! Sending order for price ID " << priceId << endl;
+                cout << "Momentum down! Sending order for price ID " << priceId << " Direction: Sell" << endl;
+                // Send order (price ID)
+                string order = to_string(priceId);
+                send(socketFd, order.c_str(), (int)order.size(), 0);
+                cout << "📤 Sent order for price ID: " << priceId << endl;
             }
             else {
                 cout << "No momentum. Ignoring price ID " << priceId << endl;
             }
         }
 
-        // Simulate reaction delay
-        this_thread::sleep_for(chrono::milliseconds(100 + rand() % 300));
+        // // Send order (price ID)
+        // string order = to_string(priceId);
+        // send(socketFd, order.c_str(), (int)order.size(), 0);
 
-        // Send order (price ID)
-        string order = to_string(priceId);
-        send(socketFd, order.c_str(), (int)order.size(), 0);
-
-        cout << "📤 Sent order for price ID: " << priceId << endl;
+        // cout << "📤 Sent order for price ID: " << priceId << endl;
     }
 
     CLOSESOCKET(socketFd);
@@ -125,7 +129,7 @@ int main() {
     sockaddr_in serverAddr{};
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port   = htons(SERVER_PORT);
-    // 127.0.0.1 → 二进制
+    // 127.0.0.1
     if (inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr) != 1) {
         cerr << "inet_pton failed!" << endl;
         CLOSESOCKET(sock);
