@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <string>
+#include <deque>
 
 #ifdef _WIN32
   #include <winsock2.h>      // Winsock2
@@ -28,11 +29,12 @@ using namespace std;
 #define SERVER_PORT 12345
 #define BUFFER_SIZE 1024
 
-// 收价格→随机延迟→回发订单(价格ID)
+std::deque<float> priceHistory;
+
 void receiveAndRespond(SOCKET socketFd, const string& name) {
     char buffer[BUFFER_SIZE];
 
-    // 发送客户端名
+    // Send client name
     send(socketFd, name.c_str(), (int)name.size(), 0);
 
     while (true) {
@@ -55,14 +57,45 @@ void receiveAndRespond(SOCKET socketFd, const string& name) {
 
         cout << "📥 Received price ID: " << priceId << ", Value: " << price << endl;
 
-        // 模拟反应延迟
-        this_thread::sleep_for(chrono::milliseconds(100 + rand() % 300));
+        if (priceHistory.size() >= 3)
+            priceHistory.pop_front();
+        priceHistory.push_back(price);
 
-        // 回发订单(仅价格ID)
-        string order = to_string(priceId);
-        send(socketFd, order.c_str(), (int)order.size(), 0);
+        if (priceHistory.size() == 3) {
+            float a = priceHistory[0];
+            float b = priceHistory[1];
+            float c = priceHistory[2];
+        
+            bool up = (a < b) && (b < c);
+            bool down = (a > b) && (b > c);
+        
+            if (up) {
+                // HIT!
+                this_thread::sleep_for(chrono::milliseconds(10 + rand() % 50));
+                cout << "Momentum up! Sending order for price ID " << priceId << " Direction: Buy" << endl;
+                // Send order (price ID)
+                string order = to_string(priceId);
+                send(socketFd, order.c_str(), (int)order.size(), 0);
+                cout << "📤 Sent order for price ID: " << priceId << endl;
+            }
+            else if(down){
+                this_thread::sleep_for(chrono::milliseconds(10 + rand() % 50));
+                cout << "Momentum down! Sending order for price ID " << priceId << " Direction: Sell" << endl;
+                // Send order (price ID)
+                string order = to_string(priceId);
+                send(socketFd, order.c_str(), (int)order.size(), 0);
+                cout << "📤 Sent order for price ID: " << priceId << endl;
+            }
+            else {
+                cout << "No momentum. Ignoring price ID " << priceId << endl;
+            }
+        }
 
-        cout << "📤 Sent order for price ID: " << priceId << endl;
+        // // Send order (price ID)
+        // string order = to_string(priceId);
+        // send(socketFd, order.c_str(), (int)order.size(), 0);
+
+        // cout << "📤 Sent order for price ID: " << priceId << endl;
     }
 
     CLOSESOCKET(socketFd);
@@ -72,7 +105,7 @@ int main() {
     srand((unsigned)time(nullptr));
 
 #ifdef _WIN32
-    // 初始化 Winsock
+    // initialize Winsock
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
         cerr << "WSAStartup failed." << endl;
@@ -96,7 +129,7 @@ int main() {
     sockaddr_in serverAddr{};
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port   = htons(SERVER_PORT);
-    // 127.0.0.1 → 二进制
+    // 127.0.0.1
     if (inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr) != 1) {
         cerr << "inet_pton failed!" << endl;
         CLOSESOCKET(sock);
