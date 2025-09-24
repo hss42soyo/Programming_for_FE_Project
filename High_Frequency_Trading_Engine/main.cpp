@@ -5,7 +5,7 @@
 #include "TradeEngine.h"
 
 
-int main() {
+int main(){
     std::vector<MarketData> feed;
     MarketDataFeed generator(feed);
 
@@ -14,7 +14,7 @@ int main() {
     TradeEngine engine(feed);
 //    generator.generateData(1000000);
 //    engine.process();
-    engine.process_simultaneous(100000);
+    engine.process_simultaneous(1000000);
 
     auto end = std::chrono::high_resolution_clock::now();
     auto runtime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
