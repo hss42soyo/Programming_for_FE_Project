@@ -96,8 +96,25 @@ thread_local uint32_t Book::t1[64]={0};
 thread_local uint32_t Book::t2[64]={0};
 thread_local uint64_t Book::ctr=0;
 
+// Reset the shared per-run state so checksums are comparable
+static inline void reset_book() {
+    // no extra headers needed; keep it simple
+    for (int i = 0; i < 64; ++i) {
+        Book::t1[i] = 0u;
+        Book::t2[i] = 0u;
+    }
+    Book::ctr = 0;
+}
+
+// Abstract base class for processors
+class Processor {
+public:
+    virtual ~Processor() {}
+    virtual uint64_t process(Order& o) = 0; // Pure virtual function
+};
+
 // Virtual implementation - Strategy A
-class StrategyA_V {
+class StrategyA_V : public Processor {
 public:
     // Process order using Strategy A algorithm
     uint64_t process(Order& o) {
@@ -129,7 +146,7 @@ public:
 };
 
 // Virtual implementation - Strategy B
-class StrategyB_V {
+class StrategyB_V : public Processor {
 public:
     // Process order using Strategy B algorithm
     uint64_t process(Order& o) {
@@ -188,7 +205,9 @@ public:
 class StrategyB_NV {
 public:
     uint64_t run(Order& o){
-        auto& t1 = Book::t1; auto& t2 = Book::t2; auto& ctr = Book::ctr;
+        auto& t1 = Book::t1; 
+        auto& t2 = Book::t2; 
+        auto& ctr = Book::ctr;
         uint64_t x = (o.id * 1315423911ull) ^ (uint64_t)(o.price - o.qty);
         uint32_t i1 = (uint32_t)(o.price + o.qty) & 63;
         uint32_t i2 = (uint32_t)(o.id + (uint32_t)o.side) & 63;
@@ -212,11 +231,12 @@ static volatile uint64_t g_sink = 0;
 
 // Benchmark virtual dispatch implementation
 RunResult run_virtual(vector<Order>& orders, const vector<uint8_t>& asg) {
+    reset_book(); // Reset shared state before run
     using clk = std::chrono::high_resolution_clock;
     
     // Create strategy instances
-    StrategyA_V strategyA;
-    StrategyB_V strategyB;
+    Processor* strategyA = new StrategyA_V();
+    Processor* strategyB = new StrategyB_V();
     
     g_sink = 0;
     auto t0 = clk::now();
@@ -224,9 +244,9 @@ RunResult run_virtual(vector<Order>& orders, const vector<uint8_t>& asg) {
     // Process each order with assigned strategy
     for (size_t i = 0; i < orders.size(); i++) {
         if (asg[i] == 0) {
-            g_sink += strategyA.process(orders[i]);  // Use Strategy A
+            g_sink += strategyA->process(orders[i]);  // Use Strategy A
         } else {
-            g_sink += strategyB.process(orders[i]);  // Use Strategy B
+            g_sink += strategyB->process(orders[i]);  // Use Strategy B
         }
     }
     
@@ -238,6 +258,7 @@ RunResult run_virtual(vector<Order>& orders, const vector<uint8_t>& asg) {
 
 // Benchmark non-virtual dispatch implementation
 RunResult run_nonvirtual(vector<Order>& orders, const vector<uint8_t>& asg) {
+    reset_book(); // Reset shared state before run
     using clk = std::chrono::high_resolution_clock;
     
     // Create strategy instances
@@ -318,8 +339,10 @@ int main(){
         sort(elapsed_ns_v.begin(), elapsed_ns_v.end());
         uint64_t best_v = elapsed_ns_v.front();
         uint64_t median_v = elapsed_ns_v[elapsed_ns_v.size()/2];
+        uint64_t average_v = accumulate(elapsed_ns_v.begin(), elapsed_ns_v.end(), 0ull) / elapsed_ns_v.size();
         (*out) << pat_name(p) << ",virtual,best,-,-," << best_v << ",-,-\n";
         (*out) << pat_name(p) << ",virtual,median,-,-," << median_v << ",-,-\n";
+        (*out) << pat_name(p) << ",virtual,average,-,-," << average_v << ",-,-\n";
 
         // Test non-virtual dispatch implementation
         vector<uint64_t> elapsed_ns_nv;
@@ -335,8 +358,10 @@ int main(){
         sort(elapsed_ns_nv.begin(), elapsed_ns_nv.end());
         uint64_t best_nv = elapsed_ns_nv.front();
         uint64_t median_nv = elapsed_ns_nv[elapsed_ns_nv.size()/2];
+        uint64_t average_nv = accumulate(elapsed_ns_nv.begin(), elapsed_ns_nv.end(), 0ull) / elapsed_ns_nv.size();
         (*out) << pat_name(p) << ",nonvirtual,best,-,-," << best_nv << ",-,-\n";
         (*out) << pat_name(p) << ",nonvirtual,median,-,-," << median_nv << ",-,-\n";
+        (*out) << pat_name(p) << ",nonvirtual,average,-,-," << average_nv << ",-,-\n";
     }
     
     return 0;
