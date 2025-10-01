@@ -19,7 +19,7 @@ bool ShouldSell(MarketSnapshot& snapshot) {
     if (snapshot.bids.empty()) {
         return false;
     }
-    if (snapshot.get_best_bid()->price >= 100.17) {
+    if (snapshot.get_best_bid()->price >= 100.15) {
         return true;
     }
     return false;
@@ -42,15 +42,15 @@ int main() {
         // Integrate with your components:
         if (event.type == FeedType::BID) {
             snapshot.update_bid(event.price, event.quantity);
-            if (ShouldBuy(snapshot)) {
-                order_manager.place_order(Side::Buy, snapshot.get_best_bid()->price, 100);
+            if (ShouldSell(snapshot)) {
+                order_manager.place_order(Side::Sell, snapshot.get_best_bid()->price, 100);
             }
             
         } 
         else if (event.type == FeedType::ASK) {
             snapshot.update_ask(event.price, event.quantity);
             if (ShouldSell(snapshot)) {
-                order_manager.place_order(Side::Sell, snapshot.get_best_ask()->price, 100);
+                order_manager.place_order(Side::Buy, snapshot.get_best_ask()->price, 100);
             }
         } 
         else if (event.type == FeedType::EXECUTION) {
