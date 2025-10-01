@@ -1,0 +1,54 @@
+# Initial market setup
+BID 100.10 300
+ASK 100.20 250
+
+# New bid comes in at a better price
+BID 100.15 200
+
+# Ask gets updated to a better price
+ASK 100.18 100
+
+# Partial quantity removed from top ask
+ASK 100.18 60
+
+# Bid at 100.10 disappears (canceled or filled)
+BID 100.10 0
+
+# Ask quantity reduced again
+ASK 100.18 30
+
+# Ask completely gone
+ASK 100.18 0
+
+# New ask comes in higher
+ASK 100.25 200
+
+# Strategy places an order (we assume ID = 1)
+# (This part would be handled by your program, not the feed)
+
+# Simulated execution events from the "exchange"
+EXECUTION 1 10
+EXECUTION 1 20
+
+# New bid comes in
+BID 100.17 100
+
+# Another strategy order placed (assume ID = 2)
+
+# Fill for that new order
+EXECUTION 2 50
+
+# Bid at 100.15 reduced in quantity
+BID 100.15 100
+
+# Ask comes in at a new level
+ASK 100.22 150
+
+# Execution that completes an order fully
+EXECUTION 2 50
+
+# New top bid
+BID 100.20 300
+
+# Final snapshot change
+ASK 100.23 100
