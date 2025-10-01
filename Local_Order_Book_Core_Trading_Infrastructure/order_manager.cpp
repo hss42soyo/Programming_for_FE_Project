@@ -27,7 +27,7 @@ void OrderManager::cancel(int id) {
 void OrderManager::handle_fill(int id, int filled_qty) {
     auto it = orders.find(id);
     if (it != orders.end()) {
-        std::cout << "[Execution] Order " << id << " filled: " << filled_qty << "\n";
+        //std::cout << "[Execution] Order " << id << " filled: " << filled_qty << "\n";
         it->second->filled += filled_qty;
         if (it->second->filled >= it->second->quantity) {
             it->second->status = OrderStatus::Filled;

@@ -9,53 +9,54 @@ Trading session started
 [BID] 100.15 x 200
 [Market] New Bid: 100.15 x 200
 [Market] Best Bid: 100.15 x 200
-[Strategy] Placing BUY order at 100.15 x 100 ( ID = 1 )
+[Strategy] Placing SELL order at 100.15 x 100 ( ID = 1 )
 [ASK] 100.18 x 100
 [Market] New Ask: 100.18 x 100
 [Market] Best Ask: 100.18 x 100
+[Strategy] Placing BUY order at 100.18 x 100 ( ID = 2 )
 [ASK] 100.18 x 60
 [Market] Best Ask: 100.18 x 60
+[Strategy] Placing BUY order at 100.18 x 100 ( ID = 3 )
 [BID] 100.1 x 0
 [Market] Best Bid: 100.15 x 200
-[Strategy] Placing BUY order at 100.15 x 100 ( ID = 2 )
+[Strategy] Placing SELL order at 100.15 x 100 ( ID = 4 )
 [ASK] 100.18 x 30
 [Market] Best Ask: 100.18 x 30
+[Strategy] Placing BUY order at 100.18 x 100 ( ID = 5 )
 [ASK] 100.18 x 0
 [Market] Best Ask: 100.18 removed
 [Market] Best Ask: 100.2 x 250
+[Strategy] Placing BUY order at 100.2 x 100 ( ID = 6 )
 [ASK] 100.25 x 200
 [Market] New Ask: 100.25 x 200
 [Market] Best Ask: 100.2 x 250
+[Strategy] Placing BUY order at 100.2 x 100 ( ID = 7 )
 [EXECUTION] Order 1 filled: 10
-[Execution] Order 1 filled: 10
 [Order] Order 1 partially filled: 10/100
 [EXECUTION] Order 1 filled: 20
-[Execution] Order 1 filled: 20
 [Order] Order 1 partially filled: 30/100
 [BID] 100.17 x 100
 [Market] New Bid: 100.17 x 100
 [Market] Best Bid: 100.17 x 100
-[Strategy] Placing BUY order at 100.17 x 100 ( ID = 3 )
+[Strategy] Placing SELL order at 100.17 x 100 ( ID = 8 )
 [EXECUTION] Order 2 filled: 50
-[Execution] Order 2 filled: 50
 [Order] Order 2 partially filled: 50/100
 [BID] 100.15 x 100
 [Market] Best Bid: 100.17 x 100
-[Strategy] Placing BUY order at 100.17 x 100 ( ID = 4 )
+[Strategy] Placing SELL order at 100.17 x 100 ( ID = 9 )
 [ASK] 100.22 x 150
 [Market] New Ask: 100.22 x 150
 [Market] Best Ask: 100.2 x 250
-[Strategy] Placing SELL order at 100.2 x 100 ( ID = 5 )
+[Strategy] Placing BUY order at 100.2 x 100 ( ID = 10 )
 [EXECUTION] Order 2 filled: 50
-[Execution] Order 2 filled: 50
 [Order] Order 2 completed (100/100) and removed
 [BID] 100.2 x 300
 [Market] New Bid: 100.2 x 300
 [Market] Best Bid: 100.2 x 300
-[Strategy] Placing BUY order at 100.2 x 100 ( ID = 6 )
+[Strategy] Placing SELL order at 100.2 x 100 ( ID = 11 )
 [ASK] 100.23 x 100
 [Market] New Ask: 100.23 x 100
 [Market] Best Ask: 100.2 x 250
-[Strategy] Placing SELL order at 100.2 x 100 ( ID = 7 )
+[Strategy] Placing BUY order at 100.2 x 100 ( ID = 12 )
 Trading session ended
 
