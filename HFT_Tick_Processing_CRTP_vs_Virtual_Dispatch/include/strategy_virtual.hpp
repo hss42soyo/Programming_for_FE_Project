@@ -3,6 +3,7 @@
 
 // CRTP base: static dispatch
 template <typename derived></typename derived>
+
 struct StrategyBase {
     // Non-virtual: will inline to Derived::on_tick_impl if small enough
     double on_tick(const Quote& q) {
@@ -11,7 +12,9 @@ struct StrategyBase {
 
 };
 
+
 // Same behavior as SignalStrategyVirtual but via CRTP
+
 struct SignalStrategyCRTP : public StrategyBase {
     double alpha1;
     double alpha2;

@@ -1,96 +1,56 @@
 #include "market_data.hpp"
-
 #include "utils.hpp"
-
 #include "strategy_virtual.hpp"
-
 #include "strategy_crtp.hpp"
-
-
 
 
 // Free function baseline (control)
 
 inline double signal_free(const Quote& q, double a1, double a2) {
-
     const double mp = microprice(q);
-
     const double m  = mid(q);
-
     const double imb = imbalance(q);
-
     return a1 * (mp - m) + a2 * imb;
-
 }
-
-
 
 
 static void generate_ticks(std::vector& out, uint32_t n, uint32_t seed) {
-
     out.resize(n);
-
     XorShift32 rng(seed);
 
     for (uint32_t i = 0; i < n; ++i) {
-
         double midp = rng.uniform(99.5, 100.5);      // around $100
-
         double sprd = rng.uniform(0.0005, 0.02);     // 0.05–2 cents
-
         double bq   = rng.uniform(100.0, 5000.0);    // sizes
-
         double aq   = rng.uniform(100.0, 5000.0);
 
         out[i] = Quote{
-
             .bid = midp - 0.5 * sprd,
-
             .ask = midp + 0.5 * sprd,
-
             .bid_qty = bq,
-
             .ask_qty = aq
-
         };
-
     }
-
 }
-
-
-
 
 // Prevent dead code elimination by accumulating a checksum
 
 template<typename f></typename f>
 
 static double run_bench(const char* name, const std::vector& ticks, F&& func, int iters) {
-
     Timer t; t.start();
-
     volatile double sink = 0.0;
-
     for (int r = 0; r < iters; ++r) {
-
         for (const auto& q : ticks) {
-
             double s = func(q);
-
             sink += s * 1e-9; // keep it small
-
         }
-
     }
-
     double ns = t.stop_ns();
-
+    
     // Print also sink to prevent DCE
-
     std::printf("%-18s  time: %.3f ms  sink=%.6f\n", name, ns / 1e6, sink);
-
     return ns;
-
 }
 
 
