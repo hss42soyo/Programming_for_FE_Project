@@ -1,20 +1,14 @@
 #pragma once
-#include 
-
-#include 
-
-#include 
-
-
+#include <cstdint>
+#include <chrono>
 
 
 // Prevent the optimizer from eliding computations.
 // Works on GCC/Clang; MSVC will just use a volatile sink.
 
-template <class t></class t>
+template <class T>
 
 inline void do_not_optimize_away(T const& value) {
-
 #if defined(__GNUC__) || defined(__clang__)
     asm volatile("" : : "g"(value) : "memory");
 #else
@@ -29,7 +23,7 @@ struct Timer {
     void start() { t0 = clock::now(); }
     double stop_ns() const {
         auto t1 = clock::now();
-        return std::chrono::duration<double, std::nano>(t1 - t0).count();</double, std::nano>
+        return std::chrono::duration<double, std::nano>(t1 - t0).count();
     }
 };
 
