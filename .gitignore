@@ -6,3 +6,4 @@ CmakeCache.txt
 MakeFile
 test
 cmake_install.cmake
+.vs/
