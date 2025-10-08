@@ -198,7 +198,7 @@ void startServer() {
 }
 
 int main() {
-    srand((unsigned)time(nullptr)); // 简单随机种子
+    srand((unsigned)time(nullptr));
     startServer();
     return 0;
 }
