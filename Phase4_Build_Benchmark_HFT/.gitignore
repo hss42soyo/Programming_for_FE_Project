@@ -1,27 +1,23 @@
-# Build directories
-x64/
-Debug/
-Release/
-build/
-.vs/
-
-# Intermediate build files
+# ignore build/IDE outputs anywhere
+**/.vs/
+**/x64/
+**/Debug/
+**/Release/
+**/ipch/
 *.obj
 *.pch
 *.pdb
 *.idb
 *.ilk
-*.log
 *.tlog
+*.log
 *.lastbuildstate
 *.VC.db
 *.VC.VC.opendb
-
-# User-specific
 *.user
-*.suo
 
-# CMake (optional)
+# CMake
+build/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
