@@ -1,9 +1,8 @@
 /.vscode
-*.exe
-CMakeLists.txt
 High_Performance_Linear_Algebra_Kernels/CMakeFiles
 CmakeCache.txt
 MakeFile
-test
 cmake_install.cmake
+build/
+CMakeFiles/
 .vs/
