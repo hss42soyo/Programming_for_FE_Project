@@ -1,6 +1,10 @@
 #pragma once
-#include <bits/stdc++.h>
-using namespace std;
+#include <cstdint>
+#include <vector>
+#include <unordered_map>
+#include <stdexcept>
+#include <algorithm>
+
 
 using id_t = uint64_t;
 using price_t = int32_t;
@@ -29,8 +33,8 @@ struct PriceLevelSummary {
 };
 
 struct PriceLevel {
-    alignas(64) vector<Order> orders;
-    vector<idx_t> free_list;
+    alignas(64) std::vector<Order> orders;
+    std::vector<idx_t> free_list;
     qty_t totalVolume;
     size_t activeCount;
     PriceLevel(): totalVolume(0), activeCount(0) {}
@@ -71,7 +75,7 @@ public:
         : minTick(min_tick), maxTick(max_tick)
     {
         if (maxTick < minTick) {
-            throw runtime_error("invalid tick range");
+            throw std::runtime_error("invalid tick range");
         }
         nLevels = static_cast<size_t>(maxTick - minTick + 1);
         levels.resize(nLevels);
@@ -82,8 +86,12 @@ public:
     }
 
     bool newOrder(const Order& o) {
-        if (o.qty == 0 || !inRange(o.price)) return false;
-        if (idMap.count(o.id)) return false;
+        if (o.qty == 0 || !inRange(o.price)) {
+            return false;
+        }
+        if (idMap.count(o.id)) {
+            return false;
+        }
 
         auto &pl = levels[idxForPrice(o.price)];
         idx_t id = pl.allocSlot();
@@ -204,8 +212,8 @@ public:
 private:
     price_t minTick, maxTick;
     size_t nLevels;
-    vector<PriceLevel> levels;
-    unordered_map<id_t, Meta> idMap;
+    std::vector<PriceLevel> levels;
+    std::unordered_map<id_t, Meta> idMap;
     size_t bestBidIdx = 0, bestAskIdx = 0;
 
     inline bool inRange(price_t p) const { 
@@ -224,7 +232,7 @@ private:
     void updateBestOnInsert(price_t p, Side s) {
         size_t idx = idxForPrice(p);
         if (s == Side::Buy) {
-            bestBidIdx = max(bestBidIdx, idx);
+            bestBidIdx = std::max(bestBidIdx, idx);
         } 
         else if (levels[bestAskIdx].activeCount == 0 || idx < bestAskIdx) {
             bestAskIdx = idx;
