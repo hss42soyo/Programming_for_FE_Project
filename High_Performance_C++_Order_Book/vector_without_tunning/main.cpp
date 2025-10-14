@@ -1,4 +1,4 @@
-#include "orderbook_new.hpp"
+#include "orderbook.hpp"
 #include <chrono>
 #include <random>
 #include <iostream>
@@ -9,7 +9,7 @@ static std::mt19937_64 rng(123456789);
 
 void unit_tests() {
     std::cout << "==== UNIT TEST ====" << std::endl;
-    OrderBookNew ob;
+    OrderBook ob(0, 1000);
     const int N = 1000;
 
     // Insert random orders
@@ -28,14 +28,15 @@ void unit_tests() {
     for (int i = 1; i <= 100; ++i) ob.deleteOrder(i);
 
     std::cout << "Remaining after delete: " << ob.totalOrders() << "\n";
-    auto tb = ob.bestBid();
-    auto ta = ob.bestAsk();
-    std::cout << "Top Bid = " << tb << " | Top Ask = " << ta << "\n";
+    auto tb = ob.topOfBook(Side::Buy);
+    auto ta = ob.topOfBook(Side::Sell);
+    std::cout << "Top Bid = " << tb.price << " qty=" << tb.totalQty << " | Top Ask = " 
+         << ta.price << " qty=" << ta.totalQty << "\n";
 }
 
 void benchmark_run(size_t N = 1'000'000) {
     std::cout << "\n==== BENCHMARK (" << N << " events) ====\n";
-    OrderBookNew ob;
+    OrderBook ob(0, 5000);
     std::vector<id_t> live;
     live.reserve(1 << 20);
 
@@ -51,7 +52,6 @@ void benchmark_run(size_t N = 1'000'000) {
     double deleteRate = 0.20;
 
     //auto t0 = clk::now();
-
     long long time_insert = 0;
     for (size_t i = 0; i < (int)(insertRate * N); ++i) {
         // new
@@ -62,7 +62,7 @@ void benchmark_run(size_t N = 1'000'000) {
         o.side = side(rng) ? Side::Buy : Side::Sell;
         o.active = true;
         auto t0_insert = clk::now();
-        if (ob.newOrder(o)) {
+        if (ob.newOrder(o)){
             auto t1_insert = clk::now();
             time_insert += std::chrono::duration_cast<std::chrono::nanoseconds>(t1_insert - t0_insert).count();
             live.push_back(o.id);
@@ -101,11 +101,20 @@ void benchmark_run(size_t N = 1'000'000) {
     //auto t_delete = clk::now();
 
     auto t0_top = clk::now();
-    auto tb = ob.bestBid();
-    auto ta = ob.bestAsk();
+    auto tb = ob.topOfBook(Side::Buy);
+    auto ta = ob.topOfBook(Side::Sell);
     auto t1_top = clk::now();
-    std::cout << "Top Bid: " << tb << " | Top Ask: " << ta << "\n";
+    std::cout << "Top Bid: " << tb.price << " qty=" << tb.totalQty << " | Top Ask: " 
+         << ta.price << " qty=" << ta.totalQty << "\n";
     std::cout << "Top of Book latency: " << std::chrono::duration<double, std::nano>(t1_top - t0_top).count() << " ns\n";
+
+    std::cout << "Total time: " << (time_insert + time_amend + time_delete) << " ns\n";
+    std::cout << "Avg time per event: " << (double)(time_insert + time_amend + time_delete) / N << " ns\n";
+    std::cout << "Operation Rate: " << (1e3 * N / (time_insert + time_amend + time_delete)) << " Mops/s\n";
+    std::cout << "Final orders: " << ob.totalOrders() << "\n";
+
+    ob.clear();
+    std::cout << "After clear, orders: " << ob.totalOrders() << "\n";
 
     // auto t1 = clk::now();
     // double sec = std::chrono::duration<double>(t1 - t0).count();
@@ -120,19 +129,13 @@ void benchmark_run(size_t N = 1'000'000) {
     // std::cout << "Delete Rate: " << (int)(0.2 * N / sec) << " ops/s\n";
     // sec = std::chrono::duration<double>(t_top - t_delete).count();
     // std::cout << "Top of Book latency: " << (1e9 * sec) << " ns\n";
-
-    std::cout << "Total time: " << (time_insert + time_amend + time_delete) << " ns\n";
-    std::cout << "Avg time per event: " << (double)(time_insert + time_amend + time_delete) / N << " ns\n";
-    std::cout << "Operation Rate: " << (1e3 * N / (time_insert + time_amend + time_delete)) << " Mops/s\n";
-    std::cout << "Final orders: " << ob.totalOrders() << "\n";
-
-    ob.clear();
-    std::cout << "After clear, orders: " << ob.totalOrders() << "\n";
+    // ob.clear();
+    // std::cout << "After clear, orders: " << ob.totalOrders() << "\n";
 
     std::cout << "\n==== BENCHMARK LATENCY/OPS (Median Min Max 90th 99th) ====\n";
     std::vector<double> latencies;
     latencies.reserve(N);
-    nextId = 1;
+    latencies.clear();
     for (size_t i = 0; i < N; ++i) {
         Order o;
         o.id = nextId++;
@@ -146,8 +149,8 @@ void benchmark_run(size_t N = 1'000'000) {
         auto t1 = clk::now();
         latencies.push_back(std::chrono::duration<double, std::nano>(t1 - t0).count());
     }
+    std::sort(latencies.begin(), latencies.end());
     std::cout << "Insert: ";
-    std::sort(latencies.begin(), latencies.end());
     std::cout << "Median: " << latencies[latencies.size()/2] << " " 
          << "Min: " << latencies[0] << " " 
          << "Max: " << latencies.back() << " "
@@ -156,40 +159,39 @@ void benchmark_run(size_t N = 1'000'000) {
 
     latencies.clear();
     for (size_t i = 0; i < N; ++i) {
-        id_t id = (rng() % (nextId - 1)) + 1;
-        qty_t newQty = (qty_t)qty(rng);
-
+        if (live.empty()) break;
+        size_t pos = rng()%live.size();
         auto t0 = clk::now();
-        ob.amendOrder(id, newQty);
+        ob.amendOrder(live[pos], qty(rng));
         auto t1 = clk::now();
         latencies.push_back(std::chrono::duration<double, std::nano>(t1 - t0).count());
     }
+    std::sort(latencies.begin(), latencies.end());
     std::cout << "Amend: ";
-    std::sort(latencies.begin(), latencies.end());
     std::cout << "Median: " << latencies[latencies.size()/2] << " " 
          << "Min: " << latencies[0] << " " 
          << "Max: " << latencies.back() << " "
          << "90th: " << latencies[(int)(0.9 * latencies.size())] << " "
          << "99th: " << latencies[(int)(0.99 * latencies.size())] << " ns\n";
-    
+
     latencies.clear();
     for (size_t i = 0; i < N; ++i) {
-        id_t id = (rng() % (nextId - 1)) + 1;
-
+        if (live.empty()) break;
+        size_t pos = rng()%live.size();
         auto t0 = clk::now();
-        ob.deleteOrder(id);
+        ob.deleteOrder(live[pos]);
+        std::swap(live[pos], live.back());
+        live.pop_back();
         auto t1 = clk::now();
         latencies.push_back(std::chrono::duration<double, std::nano>(t1 - t0).count());
     }
-    std::cout << "Delete: ";
     std::sort(latencies.begin(), latencies.end());
+    std::cout << "Delete: ";
     std::cout << "Median: " << latencies[latencies.size()/2] << " " 
          << "Min: " << latencies[0] << " " 
          << "Max: " << latencies.back() << " "
          << "90th: " << latencies[(int)(0.9 * latencies.size())] << " "
          << "99th: " << latencies[(int)(0.99 * latencies.size())] << " ns\n";
-
-
 }
 
 int main() {
