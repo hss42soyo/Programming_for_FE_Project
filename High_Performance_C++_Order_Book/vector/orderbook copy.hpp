@@ -93,6 +93,7 @@ public:
         bool findLevel = false;
         idx_t levelIdx = 0;
         for (size_t i = 0; i < levels.size(); ++i) {
+            if (levels[i].orders.empty()) continue;
             if (levels[i].orders[0].price == o.price) {
                 findLevel = true;
                 break;
@@ -135,6 +136,7 @@ public:
         bool findLevel = false;
         size_t levelIdx = 0;
         for (size_t i = 0; i < levels.size(); ++i) {
+            if (levels[i].orders.empty()) continue;
             if (levels[i].orders[0].price == e.price) {
                 findLevel = true;
                 break;
@@ -169,6 +171,7 @@ public:
         bool findLevel = false;
         size_t levelIdx = 0;
         for (size_t i = 0; i < levels.size(); ++i) {
+            if (levels[i].orders.empty()) continue;
             if (levels[i].orders[0].price == e.price) {
                 findLevel = true;
                 break;
@@ -207,7 +210,7 @@ public:
                 }
             }
             if (bestBidIdx != SIZE_MAX) {
-                ret.price = levels[bestBidIdx].orders[0].price;
+                ret.price = bestBidPrice;
                 ret.totalQty = levels[bestBidIdx].totalVolume;
                 ret.orderCount = levels[bestBidIdx].activeCount;
             }
@@ -231,7 +234,7 @@ public:
                 }
             }
             if (bestAskIdx != SIZE_MAX) {
-                ret.price = levels[bestAskIdx].orders[0].price;
+                ret.price = bestAskPrice;
                 ret.totalQty = levels[bestAskIdx].totalVolume;
                 ret.orderCount = levels[bestAskIdx].activeCount;
             }
