@@ -1,30 +1,22 @@
 #pragma once
 #include <unordered_map>
-#include <memory>
-#include "Order.hpp"
+#include <string>
 
 enum class OrderState { New, PartiallyFilled, Filled, Canceled };
 
+// OMS keeps states only (no owning pointers). OrderBook owns orders.
 template <typename Price, typename Oid>
 class OrderManager {
 public:
-   using Ord = Order<Price, Oid>;
+   void on_new(Oid id) { states_[id] = OrderState::New; }
 
-   std::shared_ptr<Ord> create(Oid id, const std::string& sym, Price px, int qty, bool is_buy) {
-      auto sp = std::make_shared<Ord>(id, sym, px, qty, is_buy);
-      states_[id] = OrderState::New;
-      orders_[id] = sp;
-      return sp;
-   }
+   void on_partial(Oid id) { states_[id] = OrderState::PartiallyFilled; }
+   void on_filled(Oid id) { states_[id] = OrderState::Filled; }
+   void cancel(Oid id) { states_[id] = OrderState::Canceled; }
 
-   void set_state(Oid id, OrderState st) { states_[id] = st; }
+   bool has(Oid id) const { return states_.find(id) != states_.end(); }
    OrderState state(Oid id) const { return states_.at(id); }
-   std::shared_ptr<Ord> get(Oid id) const {
-      auto it = orders_.find(id);
-      return it == orders_.end() ? nullptr : it->second;
-   }
 
 private:
-   std::unordered_map<Oid, std::shared_ptr<Ord>> orders_;
    std::unordered_map<Oid, OrderState> states_;
 };
