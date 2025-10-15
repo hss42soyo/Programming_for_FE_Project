@@ -1,4 +1,4 @@
-#include "orderbook.hpp"
+#include "orderbook copy.hpp"
 #include <chrono>
 #include <random>
 #include <iostream>
@@ -200,5 +200,18 @@ int main() {
 
     //unit_tests();
     benchmark_run(1'000'000);
+    // OrderBook ob(0, 1000);
+    // Order o;
+    // for (size_t i = 0; i < 1; ++i) {
+    //     o.id = i + 1;
+    //     o.price = rng() % 1001;
+    //     o.qty = (rng() % 100) + 1;
+    //     o.side = (rng() % 2) ? Side::Buy : Side::Sell;
+    //     ob.newOrder(o);
+    // }
+    // ob.printPriceLevels();
+    // auto buy = ob.topOfBook(Side::Buy);
+    // auto sell = ob.topOfBook(Side::Sell);
+    // std::cout << "Top of Book - Buy: " << buy.price << ", Sell: " << sell.price << "\n";
     return 0;
 }
