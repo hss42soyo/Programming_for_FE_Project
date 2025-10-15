@@ -9,7 +9,7 @@ static std::mt19937_64 rng(123456789);
 
 void unit_tests() {
     std::cout << "==== UNIT TEST ====" << std::endl;
-    OrderBook ob(0, 1000);
+    OrderBook ob(1000);
     const int N = 1000;
 
     // Insert random orders
@@ -36,7 +36,7 @@ void unit_tests() {
 
 void benchmark_run(size_t N = 1'000'000) {
     std::cout << "\n==== BENCHMARK (" << N << " events) ====\n";
-    OrderBook ob(0, 5000, 8);
+    OrderBook ob(8);
     std::vector<id_t> live;
     live.reserve(1 << 20);
 

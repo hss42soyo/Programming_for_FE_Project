@@ -73,14 +73,10 @@ public:
         Side side;
     };
 
-    OrderBook(price_t min_tick, price_t max_tick, size_t reserve_per_level = 8)
-        : minTick(min_tick), maxTick(max_tick)
+    OrderBook(size_t reserve_per_level = 8)
     {
-        if (maxTick < minTick) {
-            throw std::runtime_error("invalid tick range");
-        }
-        nLevels = static_cast<size_t>(maxTick - minTick + 1);
-        levels.resize(nLevels);
+        //nLevels = static_cast<size_t>(maxTick - minTick + 1);
+        //levels.resize(nLevels);
         for (auto &pl : levels) {
             pl.reserve(reserve_per_level);
         }
@@ -88,7 +84,7 @@ public:
     }
 
     bool newOrder(const Order& o) {
-        if (o.qty == 0 || !inRange(o.price)) {
+        if (o.qty == 0) {
             return false;
         }
         if (idMap.count(o.id)) {
@@ -96,7 +92,7 @@ public:
         }
         bool findLevel = false;
         idx_t levelIdx = 0;
-        for (size_t i = 0; i < nLevels; ++i) {
+        for (size_t i = 0; i < levels.size(); ++i) {
             if (levels[i].orders[0].price == o.price) {
                 findLevel = true;
                 break;
@@ -138,7 +134,7 @@ public:
         Meta e = it->second;
         bool findLevel = false;
         size_t levelIdx = 0;
-        for (size_t i = 0; i < nLevels; ++i) {
+        for (size_t i = 0; i < levels.size(); ++i) {
             if (levels[i].orders[0].price == e.price) {
                 findLevel = true;
                 break;
@@ -172,7 +168,7 @@ public:
         Meta e = it->second;
         bool findLevel = false;
         size_t levelIdx = 0;
-        for (size_t i = 0; i < nLevels; ++i) {
+        for (size_t i = 0; i < levels.size(); ++i) {
             if (levels[i].orders[0].price == e.price) {
                 findLevel = true;
                 break;
@@ -250,10 +246,7 @@ public:
 
     size_t orderCount(price_t p) const {
         idx_t levelIdx = 0;
-        if(!inRange(p)) {
-            return 0;
-        }
-        for (size_t i = 0; i < nLevels; ++i) {
+        for (size_t i = 0; i < levels.size(); ++i) {
             if (levels[i].orders[0].price == p) {
                 levelIdx = i;
                 return levels[levelIdx].activeCount;
@@ -263,10 +256,7 @@ public:
 
     qty_t totalVolume(price_t p) const {
         idx_t levelIdx = 0;
-        if(!inRange(p)) {
-            return 0;
-        }
-        for (size_t i = 0; i < nLevels; ++i) {
+        for (size_t i = 0; i < levels.size(); ++i) {
             if (levels[i].orders[0].price == p) {
                 levelIdx = i;
                 return levels[levelIdx].totalVolume;
@@ -301,14 +291,9 @@ public:
     }
 
 private:
-    price_t minTick, maxTick;
-    size_t nLevels;
+    //size_t nLevels;
     std::vector<PriceLevel> levels;
     std::unordered_map<id_t, Meta> idMap;
 
-    inline bool inRange(price_t p) const { 
-        bool result = p >= minTick && p <= maxTick; 
-        return result;
-    }
 };
 
