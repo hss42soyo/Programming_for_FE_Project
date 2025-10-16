@@ -1,4 +1,4 @@
-#include "orderbook copy.hpp"
+#include "orderbook.hpp"
 #include <chrono>
 #include <random>
 #include <iostream>
@@ -15,7 +15,7 @@ static void write_csv(const std::string& path, const std::vector<double>& v){
 
 void unit_tests() {
     std::cout << "==== UNIT TEST ====" << std::endl;
-    OrderBook ob(1000);
+    OrderBook ob(0, 1000,8);
     const int N = 1000;
 
     // Insert random orders
@@ -42,7 +42,7 @@ void unit_tests() {
 
 void benchmark_run(size_t N = 1'000'000) {
     std::cout << "\n==== BENCHMARK (" << N << " events) ====\n";
-    OrderBook ob(8);
+    OrderBook ob(0,5000,8);
     std::vector<id_t> live;
     live.reserve(1 << 20);
 
