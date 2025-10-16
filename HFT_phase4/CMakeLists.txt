@@ -29,3 +29,12 @@ foreach(tgt hft_phase4_lib hft_phase4_app hft_phase4_test)
     )
   endif()
 endforeach()
+
+# ---- ASan: default OFF----
+option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
+
+# MSVC's ASan indicator£º/fsanitize=address
+if (MSVC AND ENABLE_ASAN)
+  add_compile_options(/fsanitize=address)
+  add_link_options(/fsanitize=address)
+endif()

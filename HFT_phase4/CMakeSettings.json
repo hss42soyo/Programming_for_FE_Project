@@ -47,6 +47,30 @@
                     "type": "BOOL"
                 }
             ]
+        },
+        {
+            "name": "x64-ASan-Smart",
+            "generator": "Ninja",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "-DENABLE_ASAN=ON -DUSE_RAW_PTR=0",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": []
+        },
+        {
+            "name": "x64-ASan-Raw",
+            "generator": "Ninja",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "-DENABLE_ASAN=ON -DUSE_RAW_PTR=1",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": []
         }
     ]
 }

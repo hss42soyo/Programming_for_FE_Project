@@ -87,7 +87,7 @@ static void analyzeLatencies(std::vector<long long>& lat) {
 }
 
 int main() {
-   const int num_ticks = 100000;
+   const int num_ticks = 10000;
 
 #if USE_RAW_PTR
    const std::string ptr_type = "raw";
