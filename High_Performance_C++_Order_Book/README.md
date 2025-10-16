@@ -18,3 +18,13 @@ Optimzing methods:
 | topOfBook   | **O(1) ~ few steps** (maintain bestBid/Ask indices)            | **Amortized O(log M)** (keep `pop` until finding a valid level)   | Heap approach avoids maintaining best indices but shifts cleanup cost to query time.           |
 
 Environment:
+
+|  |  |
+|--------|--------|
+| OS System |Windows 11  |
+| Compiler |g++ 15.2.0 |
+| Compilation Flags |-O3 |
+
+Data:
+
+1'000'000 events with 45% insert, 35% amend, 20% delete. All the insert, amend, delete data are randomly generated.
