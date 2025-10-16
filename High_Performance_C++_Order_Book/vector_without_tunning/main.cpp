@@ -2,10 +2,16 @@
 #include <chrono>
 #include <random>
 #include <iostream>
+#include <fstream>
 
 using clk = std::chrono::high_resolution_clock;
 
 static std::mt19937_64 rng(123456789);
+
+static void write_csv(const std::string& path, const std::vector<double>& v){
+    std::ofstream ofs(path, std::ios::binary);
+    for (double x : v) ofs << x << '\n';
+}
 
 void unit_tests() {
     std::cout << "==== UNIT TEST ====" << std::endl;
@@ -149,6 +155,8 @@ void benchmark_run(size_t N = 1'000'000) {
         auto t1 = clk::now();
         latencies.push_back(std::chrono::duration<double, std::nano>(t1 - t0).count());
     }
+    write_csv("latency_insert_vector_without_tuning.csv", latencies);
+
     std::sort(latencies.begin(), latencies.end());
     std::cout << "Insert: ";
     std::cout << "Median: " << latencies[latencies.size()/2] << " " 
@@ -166,6 +174,8 @@ void benchmark_run(size_t N = 1'000'000) {
         auto t1 = clk::now();
         latencies.push_back(std::chrono::duration<double, std::nano>(t1 - t0).count());
     }
+    write_csv("latency_amend_vector_without_tuning.csv", latencies);
+
     std::sort(latencies.begin(), latencies.end());
     std::cout << "Amend: ";
     std::cout << "Median: " << latencies[latencies.size()/2] << " " 
@@ -185,6 +195,8 @@ void benchmark_run(size_t N = 1'000'000) {
         auto t1 = clk::now();
         latencies.push_back(std::chrono::duration<double, std::nano>(t1 - t0).count());
     }
+    write_csv("latency_delete_vector_without_tuning.csv", latencies);
+
     std::sort(latencies.begin(), latencies.end());
     std::cout << "Delete: ";
     std::cout << "Median: " << latencies[latencies.size()/2] << " " 
