@@ -1,0 +1,40 @@
+﻿{
+    "configurations": [
+        {
+            "name": "x64-Release-AlignOff",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "USE_ALIGN64",
+                    "value": "0",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "x64-Release-AlignOn",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "USE_ALIGN64",
+                    "value": "1",
+                    "type": "BOOL"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+﻿{
+    "configurations": [
+        {
+            "name": "x64-Release-New",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "USE_POOL_ALLOC",
+                    "value": "0",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "x64-Release-Pool",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "USE_POOL_ALLOC",
+                    "value": "1",
+                    "type": "BOOL"
+                }
+            ]
+        }
+    ]
+}
