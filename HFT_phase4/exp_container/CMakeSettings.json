@@ -1,0 +1,40 @@
+﻿{
+    "configurations": [
+        {
+            "name": "x64-Release-Map",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "USE_FLAT_CONTAINER",
+                    "value": "0",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "x64-Release-Flat",
+            "generator": "Ninja",
+            "configurationType": "Release",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "USE_FLAT_CONTAINER",
+                    "value": "1",
+                    "type": "BOOL"
+                }
+            ]
+        }
+    ]
+}
