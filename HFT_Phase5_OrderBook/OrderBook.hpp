@@ -69,9 +69,9 @@ public:
 // ================================
 class OptimizedOrderBook {
 private:
-    std::vector<Order> orderPool;  // 预分配订单内存池
-    std::unordered_map<std::string, size_t> orderMap;  // 映射ID到orderPool索引
-    std::atomic<int> orderCount{0};  // 无锁计数器，统计总订单数
+    std::vector<Order> orderPool;
+    std::unordered_map<std::string, size_t> orderMap;
+    std::atomic<int> orderCount{0}; 
 
 public:
     OptimizedOrderBook(size_t reserveSize = 100000) {
@@ -112,7 +112,6 @@ public:
 
     void processOrders() {
         size_t n = orderPool.size();
-        // 循环展开优化
         for (size_t i = 0; i < n; i += 2) {
             handleOrder(orderPool[i]);
             if (i + 1 < n) handleOrder(orderPool[i + 1]);
@@ -121,7 +120,6 @@ public:
 
 private:
     void handleOrder(const Order& order) {
-        // 模拟订单处理逻辑（此处为占位）
         volatile double dummy = order.price * order.quantity;
         (void)dummy;
     }

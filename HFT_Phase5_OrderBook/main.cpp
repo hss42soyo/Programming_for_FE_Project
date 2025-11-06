@@ -39,7 +39,6 @@ BenchmarkResult benchmark_baseline(const int NUM_ORDERS) {
 
     auto tic = std::chrono::high_resolution_clock::now();
 
-    // 插入订单
     auto startInsert = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < NUM_ORDERS; i++) {
         std::string id = "ORD" + std::to_string(i);
@@ -51,10 +50,8 @@ BenchmarkResult benchmark_baseline(const int NUM_ORDERS) {
     }
     auto endInsert = std::chrono::high_resolution_clock::now();
 
-    // 随机打乱 ID 用于 modify/cancel
     std::shuffle(orderIds.begin(), orderIds.end(), rng);
 
-    // 修改订单
     auto startModify = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < NUM_ORDERS / 2; i++) {
         double newPrice = priceDist(rng);
@@ -63,7 +60,6 @@ BenchmarkResult benchmark_baseline(const int NUM_ORDERS) {
     }
     auto endModify = std::chrono::high_resolution_clock::now();
 
-    // 删除订单
     auto startDelete = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < NUM_ORDERS / 4; i++) {
         ob.deleteOrder(orderIds[i]);
@@ -105,10 +101,8 @@ BenchmarkResult benchmark_optimized(const int NUM_ORDERS) {
     }
     auto endInsert = std::chrono::high_resolution_clock::now();
 
-    // modify and delete benchmark
 
     std::shuffle(orderIds.begin(), orderIds.end(), rng);
-    // 修改订单
     auto startModify = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < NUM_ORDERS / 2; i++) {
         double newPrice = priceDist(rng);
@@ -118,7 +112,6 @@ BenchmarkResult benchmark_optimized(const int NUM_ORDERS) {
     auto endModify =  std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> modifyTime = endModify - startModify;
 
-    // 删除订单
     auto startDelete = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < NUM_ORDERS / 4; i++) {
         optOb.deleteOrder(orderIds[i]);
