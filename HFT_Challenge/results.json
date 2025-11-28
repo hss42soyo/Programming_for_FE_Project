@@ -1,0 +1,28 @@
+[
+  {
+    "challenge_id": 1,
+    "winner": ""
+  },
+  {
+    "challenge_id": 2,
+    "winner": ""
+  },
+  {
+    "challenge_id": 3,
+    "winner": ""
+  },
+  {
+    "challenge_id": 4,
+    "winner": ""
+  },
+  {
+    "challenge_id": 5,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "MyAwesomeGroup"
+      }
+    ],
+    "winner": "MyAwesomeGroup"
+  }
+]
