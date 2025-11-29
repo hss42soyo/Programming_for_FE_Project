@@ -1,9 +1,10 @@
-// client_op_optimized.cpp - Windows HFT Matrix Challenge client
+// client_op_Linux.cpp - Linux HFT Matrix Challenge client
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -15,8 +16,6 @@
 #include <thread>
 #include <algorithm>
 
-#pragma comment(lib, "Ws2_32.lib")
-
 // configuration
 const char* SERVER_IP   = "127.0.0.1";
 const int   SERVER_PORT = 12345;
@@ -26,10 +25,10 @@ const std::string MY_GROUP_NAME = "Group1";
 // Maximum threads
 const unsigned int MAX_THREADS = 4;
 
-// Read int
+// Read int from TCP stream
 class IntStreamReader {
 public:
-    explicit IntStreamReader(SOCKET s) : sock(s), pos(0) {}
+    explicit IntStreamReader(int s) : sock(s), pos(0) {}
 
     // Read an int from the stream, return true on success, false on failure (disconnect/error)
     bool readInt(int& value) {
@@ -98,7 +97,7 @@ public:
     }
 
 private:
-    SOCKET sock;
+    int sock;
     std::string buffer;
     size_t pos;
 
@@ -111,7 +110,7 @@ private:
 
     bool fillBuffer() {
         char temp[4096];
-        int n = recv(sock, temp, sizeof(temp), 0);
+        int n = ::recv(sock, temp, sizeof(temp), 0);
         if (n <= 0) {
             return false; // Connection closed or error
         }
@@ -121,19 +120,10 @@ private:
 };
 
 int main() {
-    // Initialize Winsock
-    WSADATA wsaData;
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0) {
-        std::cerr << "WSAStartup failed: " << iResult << std::endl;
-        return 1;
-    }
-
     // Create socket
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (sock == INVALID_SOCKET) {
-        std::cerr << "socket failed: " << WSAGetLastError() << std::endl;
-        WSACleanup();
+    int sock = ::socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        std::perror("socket failed");
         return 1;
     }
 
@@ -141,14 +131,13 @@ int main() {
     sockaddr_in serverAddr{};
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(SERVER_PORT);
-    serverAddr.sin_addr.s_addr = inet_addr(SERVER_IP); // Local 127.0.0.1
+    serverAddr.sin_addr.s_addr = ::inet_addr(SERVER_IP); // Local 127.0.0.1
 
     // Connect to server
-    if (connect(sock, reinterpret_cast<sockaddr*>(&serverAddr),
-                sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cerr << "connect failed: " << WSAGetLastError() << std::endl;
-        closesocket(sock);
-        WSACleanup();
+    if (::connect(sock, reinterpret_cast<sockaddr*>(&serverAddr),
+                  sizeof(serverAddr)) < 0) {
+        std::perror("connect failed");
+        ::close(sock);
         return 1;
     }
 
@@ -158,11 +147,10 @@ int main() {
     {
         std::string name = MY_GROUP_NAME;
         name.push_back('\n');
-        int sent = send(sock, name.c_str(), static_cast<int>(name.size()), 0);
+        int sent = ::send(sock, name.c_str(), static_cast<int>(name.size()), 0);
         if (sent <= 0) {
             std::cerr << "Failed to send group name.\n";
-            closesocket(sock);
-            WSACleanup();
+            ::close(sock);
             return 1;
         }
     }
@@ -175,6 +163,7 @@ int main() {
     std::vector<int> B;
     std::vector<int> B_T;              // Only used for large matrices + multithreading
     std::vector<int> partial_sums(MAX_THREADS, 0); // Only use the first num_threads elements
+
     // Continuously receive challenges and respond
     while (true) {
         int challengeId = 0;
@@ -338,7 +327,7 @@ int main() {
         // Send the answer
         char outBuf[64];
         int len = std::snprintf(outBuf, sizeof(outBuf), "%d\n", answer);
-        int sent = send(sock, outBuf, len, 0);
+        int sent = ::send(sock, outBuf, len, 0);
         if (sent <= 0) {
             std::cerr << "Failed to send answer.\n";
             break;
@@ -362,8 +351,7 @@ int main() {
     }
 
 cleanup:
-    closesocket(sock);
-    WSACleanup();
+    ::close(sock);
     std::cout << "Client terminated.\n";
     return 0;
 }
