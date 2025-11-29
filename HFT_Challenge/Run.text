@@ -2,3 +2,5 @@ g++ -std=c++17 -O2 server.cpp -lws2_32 -o server.exe
 ./server.exe
 g++ -std=c++17 -O2 client.cpp -lws2_32 -o client.exe
 ./client.exe
+g++ -std=c++17 -O2 client_op.cpp -lws2_32 -o client_op.exe
+./client_op.cpp

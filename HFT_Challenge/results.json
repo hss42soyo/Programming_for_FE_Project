@@ -5,24 +5,366 @@
   },
   {
     "challenge_id": 2,
-    "winner": ""
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1_op"
   },
   {
     "challenge_id": 3,
-    "winner": ""
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
   },
   {
     "challenge_id": 4,
-    "winner": ""
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
   },
   {
     "challenge_id": 5,
     "players": [
       {
         "latency_ms": 1,
-        "name": "MyAwesomeGroup"
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
       }
     ],
-    "winner": "MyAwesomeGroup"
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 6,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 7,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 8,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 9,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 10,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1_op"
+  },
+  {
+    "challenge_id": 11,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 12,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 13,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      },
+      {
+        "latency_ms": 1,
+        "name": "Group1_op"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 14,
+    "players": [
+      {
+        "latency_ms": 11,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 15,
+    "players": [
+      {
+        "latency_ms": 3,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 16,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 17,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 18,
+    "players": [
+      {
+        "latency_ms": 11,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 19,
+    "players": [
+      {
+        "latency_ms": 2,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 20,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 21,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 22,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 23,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 24,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 25,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 26,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 27,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 28,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 29,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 30,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 31,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 32,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
+  },
+  {
+    "challenge_id": 33,
+    "players": [
+      {
+        "latency_ms": 1,
+        "name": "Group1"
+      }
+    ],
+    "winner": "Group1"
   }
 ]
